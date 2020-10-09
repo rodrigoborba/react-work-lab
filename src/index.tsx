@@ -17,7 +17,7 @@ ReactDOM.render(
 
         <Router history={history}>
             <MuiThemeProvider theme={App}>
-                <Header version="0.1" system="S549 - Parcelamento" search={<Search />} user={<User />} out={<Out />}>
+                <Header version="0.1" system="S549 - Administrativo" search={<Search />} user={<User />} out={<Out />}>
                     <MenuList></MenuList>
                 </Header>
                 <Main></Main>
