@@ -15,6 +15,7 @@ const MenuList = () =>
             <CollapseItem to='/Steppers' primary="Steppers"></CollapseItem>
             <CollapseItem to='/Tab' primary="Tab"></CollapseItem>
             <CollapseItem to='/Crud' primary="Exemplo CRUD"></CollapseItem>
+            <CollapseItem to='/ListaItens' primary="Exemplo listagem"></CollapseItem>
         </MenuItemCollapse>
 
     </List>
