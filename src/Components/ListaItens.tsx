@@ -13,8 +13,7 @@ import Keycloak from 'keycloak-js';
 import SearchIcon from '@material-ui/icons/SearchOutlined'
 import GetAppIcon from '@material-ui/icons/GetApp'
 import PublishIcon from '@material-ui/icons/Publish';
-
-import {createUseStyles} from 'react-jss'
+import MaskedInput from 'react-text-mask';
 
 export interface PropsListaItens {
   history?: any;
@@ -31,6 +30,7 @@ export interface StateListaItens {
   nome: string;
   audio: string;
   termo: string;
+  textmask: string;
   open: boolean;
   messageErro: string;
   message: string;
@@ -40,6 +40,26 @@ export interface StateListaItens {
   authenticated?: any;
   retorno?: any;
   openSnack?:  any;
+}
+
+interface TextMaskCustomProps {
+  inputRef: (ref: HTMLInputElement | null) => void;
+}
+
+function TextMaskOperacao(props: TextMaskCustomProps) {
+  const { inputRef, ...other } = props;
+
+  return (
+          <MaskedInput
+                  {...other}
+                  ref={(ref: any) => {
+                          inputRef(ref ? ref.inputElement : null);
+                  }}
+                  mask={[/\d/, '.',/\d/,/\d/, '.', /\d/, /\d/, /\d/, /\d/, /\d/,/\d/, /\d/, /\d/, /\d/, /\d/, '.', /\d/]}
+                  placeholderChar={'\u2000'}
+                  showMask
+          />
+  );
 }
 
 export default class ListaItens extends React.Component<PropsListaItens, StateListaItens>{
@@ -55,6 +75,7 @@ export default class ListaItens extends React.Component<PropsListaItens, StateLi
       nome: '',
       audio: '',
       termo: '',
+      textmask: '(  )    -    ',
       open: false,
       messageErro: '',
       message: '',
@@ -292,6 +313,9 @@ export default class ListaItens extends React.Component<PropsListaItens, StateLi
                   onChange={this.handleChange}
                   variant="outlined"
                   fullWidth
+                  InputProps={{
+                    inputComponent: TextMaskOperacao as any,
+                  }}
                   />
               </Grid>
             </Row>           
