@@ -7,7 +7,7 @@ import Formulario from './Formulario';
 import Steppers from './Steppers';
 import Tab from './Tab';
 import Crud from './Crud';
-import ListaItens from './ListaItens';
+import ListarOperacoes from '../pages/listar-operacoes/ListarOperacoes';
 import AddSistema from './AddSistema';
 import EditFields from './EditFields';
 
@@ -24,7 +24,7 @@ const Main = () => (
             <Route path='/AddSistema' component={AddSistema} />
             <Route path='/EditFields/:id' component={EditFields} />
 
-            <Route path='/ListaItens' component={ListaItens} /> 
+            <Route path='/ListarOperacoes' component={ListarOperacoes} /> 
 
             {/* <Route path="*" component={Page404} /> */}
             {/* indica todas as pÃ¡ginas que nÃ£o foram encontradas */}

@@ -1,12 +1,9 @@
 import React, {useState, ChangeEvent} from "react";
 import { Container, Snack, Load, Buttons, Row, Page, Fieldset, AutoComplete, ButtonGroup } from 'bnb-ui/dist'
-import CustomToolbar from './CustomToolbar';
-import CustomToolbarSelect from './CustomToolbarSelect';
-import EditFields from './EditFields';
+import EditFields from '../../Components/EditFields';
 import axios from 'axios';
 import MUIDataTable from 'mui-datatables';
 import { IconButton, Tooltip, Grid, TextField, FormControlLabel, Checkbox  } from '@material-ui/core';
-import EditIcon from "@material-ui/icons/Edit";
 import { Link } from 'react-router-dom';
 import Keycloak from 'keycloak-js';
 
@@ -15,13 +12,15 @@ import GetAppIcon from '@material-ui/icons/GetApp'
 import PublishIcon from '@material-ui/icons/Publish';
 import MaskedInput from 'react-text-mask';
 
-export interface PropsListaItens {
+import styles from './style.module.css'
+
+export interface PropsListarOperacoes {
   history?: any;
   snackalert?: any;
   location?: any;
 }
 
-export interface StateListaItens {
+export interface StateListarOperacoes {
   sistemas: [string, string];
   data: any[];
   id: any;
@@ -62,9 +61,9 @@ function TextMaskOperacao(props: TextMaskCustomProps) {
   );
 }
 
-export default class ListaItens extends React.Component<PropsListaItens, StateListaItens>{
+export default class ListarOperacoes extends React.Component<PropsListarOperacoes, StateListarOperacoes>{
 
-  constructor(props: PropsListaItens) {
+  constructor(props: PropsListarOperacoes) {
     super(props);
     this.state = {
       sistemas: ['', ''],
@@ -107,7 +106,7 @@ export default class ListaItens extends React.Component<PropsListaItens, StateLi
         }
       }
       this.props.history.push({
-        pathname: '/ListaItens',
+        pathname: '/ListarOperacoes',
         state: this.state.objSnack,
       })
       this.handleGet();
@@ -331,14 +330,16 @@ export default class ListaItens extends React.Component<PropsListaItens, StateLi
               </Grid>
             </Row>
 
-            <Row>  
-              <ButtonGroup>
-                <Buttons variant='outlined' color='secondary' onClick={this.handleGet}>
-                  <SearchIcon className='icones' />
-                    Pesquisar
-                  </Buttons>
-              </ButtonGroup>
-            </Row>
+            <Row>
+            <Grid item xs={12} md={12}>
+              <Buttons variant='outlined' color='secondary' onClick={this.handleGet}>
+                <SearchIcon />
+                  Pesquisar
+                </Buttons>
+                </Grid>
+            </Row>          
+
+              
 
           <Snack variant={this.state.variant} message={this.state.message} open={this.state.openSnack} onClose={this.handleClose}></Snack>
           <MUIDataTable
