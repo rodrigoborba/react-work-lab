@@ -15,6 +15,7 @@ import MaskedInput from 'react-text-mask';
 import OperacoesProvider from '../../providers/OperacoesProvider'
 import OperacaoTO from '../../models/OperacaoTO' 
 
+
 import styles from './style.module.css'
 
 export interface PropsListarOperacoes {
@@ -138,7 +139,34 @@ export default class ListarOperacoes extends React.Component<PropsListarOperacoe
   async handleGet() {
       try {
           //this.setState({...this.state, exibirLoading: true})
-          this.refresh();
+          //this.refresh();
+
+          /*  let tipo = this.state.tipoFiltro.value;
+          let municipio = this.state.municipioSelecionado.codigo;
+          let inicio = this.state.inicioDataPrevisaoExclusao;
+          let fim = this.state.fimDataPrevisaoExclusao;*/
+          const lista = await this._service.consultarOperacoes()
+          const data: any[] = [];
+
+          lista.data.map(
+            (
+              x: { 
+                id: any; 
+                operacao: any;
+                documento: any; 
+                nome: any; 
+              }
+            ) => data.push(
+                    { 
+                      'Id': x.id, 
+                      'Operação': x.operacao,
+                      'CPF/CNPJ': x.documento,
+                      'Nome': x.nome,  
+                    }
+                  )
+          );
+          this.setState({data});
+
           /*
           this.setState({...this.state, exibirLoading: false, municipios: listaMunicipios
           })*/
@@ -148,31 +176,7 @@ export default class ListarOperacoes extends React.Component<PropsListarOperacoe
   }
 
   async refresh(description = '') {
-  /*  let tipo = this.state.tipoFiltro.value;
-    let municipio = this.state.municipioSelecionado.codigo;
-    let inicio = this.state.inicioDataPrevisaoExclusao;
-    let fim = this.state.fimDataPrevisaoExclusao;*/
-    const lista = await this._service.consultarOperacoes()
-    const data: any[] = [];
-
-    lista.data.map(
-      (
-        x: { 
-          id: any; 
-          operacao: any;
-          documento: any; 
-          nome: any; 
-        }
-      ) => data.push(
-              { 
-                'Id': x.id, 
-                'Operação': x.operacao,
-                'CPF/CNPJ': x.documento,
-                'Nome': x.nome,  
-              }
-            )
-    );
-    this.setState({data});
+  
       
   }
 
