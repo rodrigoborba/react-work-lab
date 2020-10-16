@@ -135,7 +135,7 @@ export default class ListarOperacoes extends React.Component<PropsListarOperacoe
 
   };
 
-  async handleGet2() {
+  async handleGet() {
       try {
           //this.setState({...this.state, exibirLoading: true})
           this.refresh();
@@ -153,24 +153,30 @@ export default class ListarOperacoes extends React.Component<PropsListarOperacoe
     let inicio = this.state.inicioDataPrevisaoExclusao;
     let fim = this.state.fimDataPrevisaoExclusao;*/
     const lista = await this._service.consultarOperacoes()
-    const listaOperacoes: any[] = [];
-                
-    lista.data.forEach((operacao: OperacaoTO) => {
-        listaOperacoes.push(
-            {
-                'id': operacao.id,
-                'documento': operacao.documento,
-                'nome': operacao.nome,
-                'audio': operacao.audio,
-                'termo': operacao.termo,
-            }
-        )
-    })
-    this.setState({data: listaOperacoes})
+    const data: any[] = [];
+
+    lista.data.map(
+      (
+        x: { 
+          id: any; 
+          operacao: any;
+          documento: any; 
+          nome: any; 
+        }
+      ) => data.push(
+              { 
+                'Id': x.id, 
+                'Operação': x.operacao,
+                'CPF/CNPJ': x.documento,
+                'Nome': x.nome,  
+              }
+            )
+    );
+    this.setState({data});
       
   }
 
-  handleGet = () => {
+  handleGetOld = () => {
     let config = null;
     /*let config = {
       headers: { 'Authorization': "Bearer " + this.state.keycloak.token }
