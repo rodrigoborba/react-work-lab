@@ -115,7 +115,7 @@ export default class ListarOperacoes extends React.Component<PropsListarOperacoe
         pathname: '/ListarOperacoes',
         state: this.state.objSnack,
       })
-      this.handleGet();
+      //this.handleGet();
 
     /*}).error(() => {
       this.setState({variant:'error'});
@@ -135,48 +135,7 @@ export default class ListarOperacoes extends React.Component<PropsListarOperacoe
 
   };
 
-  async handleGet() {
-      try {
-          //this.setState({...this.state, exibirLoading: true})
-          this.refresh();
-          /*
-          this.setState({...this.state, exibirLoading: false, municipios: listaMunicipios
-          })*/
-      } catch (error) {
-          console.log(error);
-      }   
-  }
-
-  async refresh(description = '') {
-  /*  let tipo = this.state.tipoFiltro.value;
-    let municipio = this.state.municipioSelecionado.codigo;
-    let inicio = this.state.inicioDataPrevisaoExclusao;
-    let fim = this.state.fimDataPrevisaoExclusao;*/
-    const lista = await this._service.consultarOperacoes()
-    const data: any[] = [];
-
-    lista.data.map(
-      (
-        x: { 
-          id: any; 
-          operacao: any;
-          documento: any; 
-          nome: any; 
-        }
-      ) => data.push(
-              { 
-                'Id': x.id, 
-                'Operação': x.operacao,
-                'CPF/CNPJ': x.documento,
-                'Nome': x.nome,  
-              }
-            )
-    );
-    this.setState({data});
-      
-  }
-
-  handleGetOld = () => {
+  handleGet = () => {
     let config = null;
     /*let config = {
       headers: { 'Authorization': "Bearer " + this.state.keycloak.token }
