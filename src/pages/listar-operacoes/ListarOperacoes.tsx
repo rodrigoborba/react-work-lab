@@ -12,6 +12,9 @@ import GetAppIcon from '@material-ui/icons/GetApp'
 import PublishIcon from '@material-ui/icons/Publish';
 import MaskedInput from 'react-text-mask';
 
+import OperacoesProvider from '../../providers/OperacoesProvider'
+import OperacaoTO from '../../models/OperacaoTO' 
+
 import styles from './style.module.css'
 
 export interface PropsListarOperacoes {
@@ -63,6 +66,8 @@ function TextMaskOperacao(props: TextMaskCustomProps) {
 
 export default class ListarOperacoes extends React.Component<PropsListarOperacoes, StateListarOperacoes>{
 
+  private readonly _service = new OperacoesProvider();
+
   constructor(props: PropsListarOperacoes) {
     super(props);
     this.state = {
@@ -85,6 +90,7 @@ export default class ListarOperacoes extends React.Component<PropsListarOperacoe
       retorno: '',
       openSnack: false,
     };
+
   }
   
 
@@ -128,6 +134,41 @@ export default class ListarOperacoes extends React.Component<PropsListarOperacoe
     this.setState({ open: false });
 
   };
+
+  async handleGet2() {
+      try {
+          //this.setState({...this.state, exibirLoading: true})
+          this.refresh();
+          /*
+          this.setState({...this.state, exibirLoading: false, municipios: listaMunicipios
+          })*/
+      } catch (error) {
+          console.log(error);
+      }   
+  }
+
+  async refresh(description = '') {
+  /*  let tipo = this.state.tipoFiltro.value;
+    let municipio = this.state.municipioSelecionado.codigo;
+    let inicio = this.state.inicioDataPrevisaoExclusao;
+    let fim = this.state.fimDataPrevisaoExclusao;*/
+    const lista = await this._service.consultarOperacoes()
+    const listaOperacoes: any[] = [];
+                
+    lista.data.forEach((operacao: OperacaoTO) => {
+        listaOperacoes.push(
+            {
+                'id': operacao.id,
+                'documento': operacao.documento,
+                'nome': operacao.nome,
+                'audio': operacao.audio,
+                'termo': operacao.termo,
+            }
+        )
+    })
+    this.setState({data: listaOperacoes})
+      
+  }
 
   handleGet = () => {
     let config = null;
