@@ -23,11 +23,11 @@ yarn-error.log*
 debug
 bnb-ui
 
-#src/Components/AddSistema.tsx
-#src/Components/Crud.tsx
-#src/Components/Formulario.tsx
-#src/Components/Steppers.tsx
-#src/Components/Tab.tsx
+src/Components/AddSistema.tsx
+src/Components/Crud.tsx
+src/Components/Formulario.tsx
+src/Components/Steppers.tsx
+src/Components/Tab.tsx
 
 
 
