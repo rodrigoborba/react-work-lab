@@ -2,7 +2,7 @@ import axios, { AxiosRequestConfig } from 'axios'
 import { keycloak } from "../Components/seguranca/Auth";
 
 const api = axios.create({
-  baseURL: process.env.REACT_APP_URL_BASE,
+  baseURL: process.env.REACT_APP_API_ENDPOINT,
   timeout: 30000
 })
 
