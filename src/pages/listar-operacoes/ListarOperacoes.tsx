@@ -91,7 +91,7 @@ export default function ListarOperacoes(props: any) {
       pathname: '/ListarOperacoes',
       state: values.objSnack,
     })
-    //handleGet();
+    handleGet();
 
     // return () => {
     //   window.removeEventListener('scroll', handleScroll)

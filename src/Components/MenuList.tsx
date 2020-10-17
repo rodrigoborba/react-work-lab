@@ -11,10 +11,6 @@ const MenuList = () =>
         {/* Quando houver collapse, usa-se o componente MenuItemCollpase para o item pai */}
         <MenuItemCollapse primary="Menu" >
             {/* // Usa-se o componente CollapseItem para os filhos */}
-            <CollapseItem to='/Formulario' primary="Formulário"></CollapseItem>
-            <CollapseItem to='/Steppers' primary="Steppers"></CollapseItem>
-            <CollapseItem to='/Tab' primary="Tab"></CollapseItem>
-            <CollapseItem to='/Crud' primary="Exemplo CRUD"></CollapseItem>
             <CollapseItem to='/ListarOperacoes' primary="Listar Operações"></CollapseItem>
         </MenuItemCollapse>
 

@@ -3,13 +3,7 @@ import { Switch, Route, withRouter } from "react-router-dom";
 import { createBrowserHistory, History } from "history";
 
 import Home from './Home';
-import Formulario from './Formulario';
-import Steppers from './Steppers';
-import Tab from './Tab';
-import Crud from './Crud';
 import ListarOperacoes from '../pages/listar-operacoes/ListarOperacoes';
-import AddSistema from './AddSistema';
-import EditFields from './EditFields';
 
 const Main = () => (
     <Switch >
@@ -17,12 +11,6 @@ const Main = () => (
             {/* path='/' indica o caminho da home */}
             <Route exact path='/' component={Home} />
             {/* <Route exact path='/Teste' component={teste} /> */}
-            <Route path='/Formulario' component={Formulario} />
-            <Route path='/Steppers' component={Steppers} />
-            <Route path='/Tab' component={Tab} />
-            <Route path='/Crud' component={Crud} /> 
-            <Route path='/AddSistema' component={AddSistema} />
-            <Route path='/EditFields/:id' component={EditFields} />
 
             <Route path='/ListarOperacoes' component={ListarOperacoes} /> 
 
