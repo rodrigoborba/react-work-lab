@@ -12,7 +12,7 @@ import GetAppIcon from '@material-ui/icons/GetApp'
 import PublishIcon from '@material-ui/icons/Publish';
 import MaskedInput from 'react-text-mask';
 
-import { consultarOperacoes } from '../../providers/OperacoesProvider'
+import { consultarOperacoes, consultarOperacoesFiltro } from '../../providers/OperacoesProvider'
 import OperacaoTO from '../../models/OperacaoTO' 
 
 export interface StateListarOperacoes {
@@ -91,7 +91,7 @@ export default function ListarOperacoes(props: any) {
       pathname: '/ListarOperacoes',
       state: values.objSnack,
     })
-    handleGet();
+    //handleGet();
 
     // return () => {
     //   window.removeEventListener('scroll', handleScroll)
@@ -133,7 +133,7 @@ export default function ListarOperacoes(props: any) {
   async function handleGet() {
       try {
 
-        await consultarOperacoes()
+        await consultarOperacoesFiltro(values.operacao, values.documento, values.nome)
           .then((response) => {
             const lista = response
             const data: any[] = [];
@@ -157,10 +157,10 @@ export default function ListarOperacoes(props: any) {
             );
             setData(data)
           })
-
         
       } catch (error) {
           console.log(error);
+          setData([])
           // erroLoadMensagem(Error.MSG_ERROR_SERVICO_INDISPONIVEL, 'Serviço indisponível')
       }   
   }
@@ -312,12 +312,12 @@ export default function ListarOperacoes(props: any) {
           </Row>
 
           <Row>
-          <Grid item xs={12} md={12}>
-            <Buttons variant='outlined' color='secondary' onClick={()=> handleGet()}>
-              <SearchIcon />
-                Pesquisar
+            <Grid item xs={12} md={12}>
+              <Buttons variant='outlined' color='secondary' onClick={()=> handleGet()}>
+                <SearchIcon />
+                  Pesquisar
               </Buttons>
-              </Grid>
+            </Grid>
           </Row>          
 
             
