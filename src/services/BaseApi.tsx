@@ -18,11 +18,11 @@ const config = {
 axios.request(config)
 
 function setHeaderOnConfig (config: AxiosRequestConfig) {
-  config.headers.Authorization = `Bearer ${keycloak.token}`
+  //config.headers.Authorization = `Bearer ${keycloak.token}`
   return config
 }
 
-/*api.interceptors.request.use(config => {
+api.interceptors.request.use(config => {
   return new Promise((resolve) => {
     keycloak
       .updateToken(40)
@@ -37,6 +37,6 @@ function setHeaderOnConfig (config: AxiosRequestConfig) {
         return resolve(setHeaderOnConfig(config))
       })
   })
-})*/
+})
 
 export default api

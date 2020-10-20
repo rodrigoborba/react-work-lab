@@ -8,7 +8,7 @@ export async function consultarOperacoes(): Promise<any> {
 
 export async function consultarOperacoesFiltro(operacao: string, documento: string, nome: string) {
   if (operacao || documento || nome) {
-    const responseExportarExel = await BaseApi.get('/operacoes',
+    await BaseApi.get('/operacoes',
       {
         params: {
           operacao: operacao,

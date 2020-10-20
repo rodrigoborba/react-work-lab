@@ -1,6 +1,5 @@
 import * as React from "react";
 import { Switch, Route, withRouter } from "react-router-dom";
-import { createBrowserHistory, History } from "history";
 
 import Home from './Home';
 import ListarOperacoes from '../pages/listar-operacoes/ListarOperacoes';

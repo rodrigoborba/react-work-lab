@@ -1,11 +1,7 @@
-import React, {useState, useEffect , ChangeEvent} from "react";
-import { Container, Snack, Load, Buttons, Row, Page, Fieldset, AutoComplete, ButtonGroup } from 'bnb-ui/dist'
-import EditFields from '../../Components/EditFields';
-import axios from 'axios';
+import React, {useState, useEffect } from "react";
+import { Container, Snack, Buttons, Row, Page } from 'bnb-ui/dist'
 import MUIDataTable from 'mui-datatables';
-import { IconButton, Tooltip, Grid, TextField, FormControlLabel, Checkbox  } from '@material-ui/core';
-import { Link } from 'react-router-dom';
-import Keycloak from 'keycloak-js';
+import { IconButton, Tooltip, Grid, TextField  } from '@material-ui/core';
 
 import SearchIcon from '@material-ui/icons/SearchOutlined'
 import GetAppIcon from '@material-ui/icons/GetApp'
@@ -14,6 +10,7 @@ import MaskedInput from 'react-text-mask';
 
 import { consultarOperacoes, consultarOperacoesFiltro } from '../../providers/OperacoesProvider'
 import OperacaoTO from '../../models/OperacaoTO' 
+import { init } from '../../Components/seguranca/Auth'
 
 export interface StateListarOperacoes {
   sistemas: [string, string];
@@ -87,10 +84,8 @@ export default function ListarOperacoes(props: any) {
   const [data, setData] = useState<OperacaoTO[]>([])
 
   useEffect(() => {
-    props.history.push({
-      pathname: '/ListarOperacoes',
-      state: values.objSnack,
-    })
+    init('login-required', 'implicit' )
+
     handleGet();
 
     // return () => {
@@ -98,37 +93,6 @@ export default function ListarOperacoes(props: any) {
     // }
 
   }, [])
-
-  // componentDidMount() {
-
-  //   // const keycloak = Keycloak('./keycloak.json');
-  //   // keycloak.init({ onLoad: 'login-required', flow: 'implicit' }).success(authenticated => {
-  //   //   this.setState({ keycloak: keycloak, authenticated: authenticated });
-
-  //   //   localStorage.setItem('authenricated', this.state.authenticated);
-  //   //   localStorage.setItem('keycloak', this.state.keycloak.token);
-      
-  //   //   console.log(keycloak);
-  //   //   console.log(authenticated);
-  //   //   if(this.props.location.state){
-  //   //     if (this.props.location.state[0] != '') {
-  //   //       this.setState({ variant: this.props.location.state[0], message: this.props.location.state[1] });
-  //   //       this.setState({ open: true });
-  //   //     }
-  //   //   }
-  //     this.props.history.push({
-  //       pathname: '/ListarOperacoes',
-  //       state: this.state.objSnack,
-  //     })
-  //     this.handleGet();
-
-  //   // }).error(() => {
-  //   //   this.setState({variant:'error'});
-  //   //   console.log(this.state.variant);
-  //   //   this.setState({message:'O usuÃ¡rio nÃ£o tem permissÃ£o para executar essa tarefa.'});
-  //   //   this.setState({open: true})
-  //   // });
-  // };
 
   async function handleGet() {
       try {
@@ -161,7 +125,6 @@ export default function ListarOperacoes(props: any) {
       } catch (error) {
           console.log(error);
           setData([])
-          // erroLoadMensagem(Error.MSG_ERROR_SERVICO_INDISPONIVEL, 'Serviço indisponível')
       }   
   }
 
