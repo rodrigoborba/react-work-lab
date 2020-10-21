@@ -12,6 +12,7 @@ import { consultarOperacoes, consultarOperacoesFiltro } from '../../providers/Op
 import OperacaoTO from '../../models/OperacaoTO' 
 import { init } from '../../Components/seguranca/Auth'
 import { textMaskCPF, textMaskCNPJ } from '../../utils/Mascaras';
+import { getUserFromToken } from '../../Components/seguranca/Auth'
 
 export interface StateListarOperacoes {
   sistemas: [string, string];
@@ -89,15 +90,11 @@ export default function ListarOperacoes(props: any) {
 
     handleGet();
 
-    // return () => {
-    //   window.removeEventListener('scroll', handleScroll)
-    // }
-
   }, [])
 
   async function handleGet() {
       try {
-
+        console.log('user no get.. ' + getUserFromToken());
         await consultarOperacoesFiltro(values.operacao, values.documento, values.nome)
           .then((response) => {
             const lista = response

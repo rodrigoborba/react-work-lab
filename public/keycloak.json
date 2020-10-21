@@ -2,7 +2,7 @@
     "realm": "Desenv",
     "auth-server-url": "https://s2ssod02.dreads.bnb:8443/auth",
     "ssl-required": "external",
-    "resource": "S095_REACT_SAMPLE",
+    "resource": "s549-empresa-web",
     "public-client": true,
     "confidential-port": 0
   }

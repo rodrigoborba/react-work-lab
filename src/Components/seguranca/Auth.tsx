@@ -1,10 +1,32 @@
 import Keycloak from 'keycloak-js';
 import { AxiosRequestConfig } from 'axios';
 
+import { Base64 } from 'js-base64';
+
 export const keycloak = Keycloak(process.env.PUBLIC_URL + "/keycloak.json");
 
 export function getToken(): string {
     return keycloak.token || '';
+}
+
+export function getUserFromToken(): string {
+    let token = window.localStorage.token;
+    if (token != null && token !== '') {
+      try {
+        let tokenData = Base64.decode(token.split('.')[1]);
+        let user = '';
+        JSON.parse(tokenData, (key, value) => {
+          if (key === 'preferred_username') {
+            console.log('logged user = [' + key + ' ' + value + ']');
+            user = value;
+          }
+        });
+        return user;
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    return ''
 }
 
 export const isAuthenticated = () => keycloak.token !== null && keycloak.token !== undefined;
@@ -17,7 +39,7 @@ export const init = async (
   ) => {
     const defaultAuthRoutine = (authenticated: boolean) => {
       const token: any = keycloak.token
-      window.sessionStorage.setItem('token', token)
+      window.localStorage.setItem('token', token)
       if (succesfn) {
         return succesfn(authenticated)
       }

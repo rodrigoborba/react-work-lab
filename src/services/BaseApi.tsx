@@ -28,7 +28,7 @@ api.interceptors.request.use(config => {
       .updateToken(40)
       .success(hasRefreshed => {
         if (hasRefreshed && keycloak && keycloak.token) {
-          window.sessionStorage.setItem('token', keycloak.token)
+          window.localStorage.setItem('token', keycloak.token)
         }
         return resolve(setHeaderOnConfig(config))
       })
