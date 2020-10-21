@@ -11,6 +11,7 @@ import MaskedInput from 'react-text-mask';
 import { consultarOperacoes, consultarOperacoesFiltro } from '../../providers/OperacoesProvider'
 import OperacaoTO from '../../models/OperacaoTO' 
 import { init } from '../../Components/seguranca/Auth'
+import { textMaskCPF, textMaskCNPJ } from '../../utils/Mascaras';
 
 export interface StateListarOperacoes {
   sistemas: [string, string];
@@ -84,7 +85,7 @@ export default function ListarOperacoes(props: any) {
   const [data, setData] = useState<OperacaoTO[]>([])
 
   useEffect(() => {
-    init('login-required', 'implicit' )
+    //init('login-required', 'implicit' )
 
     handleGet();
 
@@ -126,6 +127,18 @@ export default function ListarOperacoes(props: any) {
           console.log(error);
           setData([])
       }   
+  }
+
+  //TODO:
+  function retornarMascara() {
+      let conteudoDocumento = values.documento;
+      conteudoDocumento = conteudoDocumento.replaceAll(".", "").replaceAll("-", "").replaceAll("/", "");
+      conteudoDocumento = conteudoDocumento.replaceAll(/\D/g, "");
+      if(conteudoDocumento.length > 11) {
+        return { inputComponent: textMaskCNPJ as any }
+      }else{
+        return { inputComponent: textMaskCPF as any }
+      }
   }
 
   const columns: any = [
@@ -245,6 +258,9 @@ export default function ListarOperacoes(props: any) {
                 onChange={handleChange('documento')}
                 variant="outlined"
                 fullWidth
+                InputProps={
+                  retornarMascara()
+                  }
                 />
             </Grid>
             <Grid item xs={12} md={6} lg={6}>
