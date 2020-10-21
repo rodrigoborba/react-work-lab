@@ -85,7 +85,7 @@ export default function ListarOperacoes(props: any) {
   const [data, setData] = useState<OperacaoTO[]>([])
 
   useEffect(() => {
-    //init('login-required', 'implicit' )
+    init('login-required', 'implicit' )
 
     handleGet();
 

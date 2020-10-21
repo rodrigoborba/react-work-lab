@@ -9,8 +9,30 @@ export function getToken(): string {
 
 export const isAuthenticated = () => keycloak.token !== null && keycloak.token !== undefined;
 
-export const init = (onload: any, flow: any) => {
-    return keycloak.init({onLoad: onload, flow, checkLoginIframe: true});
+export const init = async (
+    onLoad: any,
+    flow: any,
+    succesfn?: (value: boolean) => any,
+    errorfn?: (error: any) => any
+  ) => {
+    const defaultAuthRoutine = (authenticated: boolean) => {
+      const token: any = keycloak.token
+      window.sessionStorage.setItem('token', token)
+      if (succesfn) {
+        return succesfn(authenticated)
+      }
+    }
+  
+    const defaultErrorRoutine = (error: any) => {
+      if (errorfn) {
+        return errorfn(error)
+      }
+    }
+  
+    return keycloak
+      .init({ onLoad, flow, checkLoginIframe: true })
+      .success(defaultAuthRoutine)
+      .error(defaultErrorRoutine)
 }
 
 export const logout = () => {
