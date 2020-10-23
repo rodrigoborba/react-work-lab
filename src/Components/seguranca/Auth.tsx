@@ -2,8 +2,6 @@ import Keycloak from 'keycloak-js';
 import { AxiosRequestConfig } from 'axios';
 import { getUserFromToken } from '../../utils/AuthUtils'
 
-import { Base64 } from 'js-base64';
-
 export const keycloak = Keycloak(process.env.PUBLIC_URL + "/keycloak.json");
 
 export function getToken(): string {
@@ -45,7 +43,7 @@ export const init = async (
 export const logout = () => {
 
     keycloak.logout(
-        { redirectUri: process.env.REACT_APP_API_REDIRECT || "http://localhost:3000" }
+        { redirectUri: process.env.PUBLIC_URL || "http://localhost:3000" }
     )
 };
 
