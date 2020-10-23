@@ -51,6 +51,15 @@ export function removerMascaraDocumento(documento: string) {
     );    
 }
 
+export function limparFormatacao(value: string) {
+        if(null !== value){
+                value = value.slice(0, -1); ;
+        }
+    return (
+        value
+    );    
+}
+
 
 
 

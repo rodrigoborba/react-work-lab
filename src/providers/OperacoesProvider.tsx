@@ -1,6 +1,6 @@
 import BaseApi from '../services/BaseApi'
 import { getUserFromToken } from '../Components/seguranca/Auth'
-import { removerMascaraDocumento } from '../utils/Mascaras'
+import { removerMascaraDocumento, limparFormatacao } from '../utils/Mascaras'
 
 export async function consultarOperacoesCarteira(): Promise<any> {
   let login = getUserFromToken();
@@ -17,9 +17,9 @@ export async function consultarOperacoesCarteira(): Promise<any> {
 export async function consultarOperacoesCarteiraFiltro(operacao: string, documento: string, nome: string) {
   if (operacao || documento || nome) {
     let login = getUserFromToken();
-    if(null !== documento){
-      documento = removerMascaraDocumento(documento);     
-    }
+    documento = removerMascaraDocumento(documento);
+    nome = limparFormatacao(nome);
+    operacao = null!= operacao? operacao.trim(): '';     
     const response = await BaseApi.get(
         '/operacoes/carteira/' + login + '/cliente/' + documento + '/' + nome + '/' + operacao)
       .then((response) => {
