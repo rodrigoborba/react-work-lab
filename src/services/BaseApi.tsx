@@ -33,7 +33,6 @@ api.interceptors.request.use(config => {
         return resolve(setHeaderOnConfig(config))
       })
       .error(hasError => {
-        console.log('Error on refresh', hasError)
         return resolve(setHeaderOnConfig(config))
       })
   })

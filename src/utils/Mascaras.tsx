@@ -5,6 +5,22 @@ interface TextMaskCustomProps {
   inputRef: (ref: HTMLInputElement | null) => void;
 }
 
+export function textMaskOperacao(props: TextMaskCustomProps) {
+        const { inputRef, ...other } = props;
+
+        return (
+                <MaskedInput
+                        {...other}
+                        ref={(ref: any) => {
+                                inputRef(ref ? ref.inputElement : null);
+                        }}
+                        mask={[/\d/, '.',/\d/,/\d/, '.', /\w/, /\d/, /\d/, /\d/, /\d/,/\d/, /\d/, /\d/, /\d/, /\d/, '.', /\d/]}
+                        placeholderChar={'\u2000'}
+                        showMask
+                />
+        );
+}
+
 export function textMaskCPF(props: TextMaskCustomProps) {
   const { inputRef, ...other } = props;
 
@@ -51,13 +67,26 @@ export function removerMascaraDocumento(documento: string) {
     );    
 }
 
-export function limparFormatacao(value: string) {
-        if(null !== value){
-                value = value.slice(0, -1); ;
+
+export function formatarDocumento(value: string) {
+        value = value.toString();
+        if(value.length > 11){
+                value=value.replace(/\D/g,"")
+                value=value.replace(/(\d{2})(\d)/,"$1.$2")
+                value=value.replace(/(\d{3})(\d)/,"$1.$2")
+                value=value.replace(/(\d{3})(\d)/,"$1.$2")
+                value=value.replace(/(\d{3})(\d{1,2})$/,"$1/$2")
+        
+        }else{
+                value=value.replace(/\D/g,"")
+                value=value.replace(/(\d{3})(\d)/,"$1.$2")
+                value=value.replace(/(\d{3})(\d)/,"$1.$2")
+                value=value.replace(/(\d{3})(\d{1,2})$/,"$1-$2")
         }
-    return (
-        value
-    );    
+        
+        return (
+                value
+        );    
 }
 
 

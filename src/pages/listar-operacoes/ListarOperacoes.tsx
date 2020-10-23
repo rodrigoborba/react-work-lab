@@ -6,12 +6,11 @@ import { IconButton, Tooltip, Grid, TextField  } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/SearchOutlined'
 import GetAppIcon from '@material-ui/icons/GetApp'
 import PublishIcon from '@material-ui/icons/Publish';
-import MaskedInput from 'react-text-mask';
 
 import { consultarOperacoesCarteiraFiltro } from '../../providers/OperacoesProvider'
 import OperacaoTO from '../../models/OperacaoTO' 
 import { init } from '../../Components/seguranca/Auth'
-import { textMaskCPF, textMaskCNPJ, removerMascaraDocumento } from '../../utils/Mascaras';
+import { textMaskCPF, textMaskCNPJ, removerMascaraDocumento, formatarDocumento, textMaskOperacao } from '../../utils/Mascaras';
 
 export interface StateListarOperacoes {
   sistemas: [string, string];
@@ -31,26 +30,6 @@ export interface StateListarOperacoes {
   authenticated?: any;
   retorno?: any;
   openSnack?:  any;
-}
-
-interface TextMaskCustomProps {
-  inputRef: (ref: HTMLInputElement | null) => void;
-}
-
-function TextMaskOperacao(props: TextMaskCustomProps) {
-  const { inputRef, ...other } = props;
-
-  return (
-          <MaskedInput
-                  {...other}
-                  ref={(ref: any) => {
-                          inputRef(ref ? ref.inputElement : null);
-                  }}
-                  mask={[/\d/, '.',/\d/,/\d/, '.', /\w/, /\d/, /\d/, /\d/, /\d/,/\d/, /\d/, /\d/, /\d/, /\d/, '.', /\d/]}
-                  placeholderChar={'\u2000'}
-                  showMask
-          />
-  );
 }
 
 export default function ListarOperacoes(props: any) {
@@ -76,7 +55,7 @@ export default function ListarOperacoes(props: any) {
   });
 
   const handleChange = (name: keyof StateListarOperacoes) => (event: React.ChangeEvent<HTMLInputElement>) => {
-      setValues({
+    setValues({
               ...values,
               [name]: event.target.value,
       });
@@ -109,7 +88,7 @@ export default function ListarOperacoes(props: any) {
                         { 
                           'Id': x.id, 
                           'Operação': x.operacaoCliente,
-                          'CPF/CNPJ': x.cliente.documento,
+                          'CPF/CNPJ': formatarDocumento(x.cliente.documento),
                           'Nome': x.cliente.nomeCliente,  
                         }
                       )
@@ -250,7 +229,7 @@ export default function ListarOperacoes(props: any) {
                 variant="outlined"
                 fullWidth
                 InputProps={{
-                  inputComponent: TextMaskOperacao as any,
+                  inputComponent: textMaskOperacao as any,
                 }}
                 />
             </Grid>

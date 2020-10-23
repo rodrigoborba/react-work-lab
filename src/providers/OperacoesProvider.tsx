@@ -1,9 +1,9 @@
 import BaseApi from '../services/BaseApi'
-import { getUserFromToken } from '../Components/seguranca/Auth'
-import { removerMascaraDocumento, limparFormatacao } from '../utils/Mascaras'
+import { getLoggedUser } from '../Components/seguranca/Auth'
+import { removerMascaraDocumento } from '../utils/Mascaras'
 
 export async function consultarOperacoesCarteira(): Promise<any> {
-  let login = getUserFromToken();
+  let login = getLoggedUser();
   const response = await BaseApi.get('/operacoes/carteira/' + login)
       .then((response) => {
         return response.data
@@ -16,10 +16,13 @@ export async function consultarOperacoesCarteira(): Promise<any> {
 
 export async function consultarOperacoesCarteiraFiltro(operacao: string, documento: string, nome: string) {
   if (operacao || documento || nome) {
-    let login = getUserFromToken();
+    let login = getLoggedUser();
+
     documento = removerMascaraDocumento(documento);
-    nome = limparFormatacao(nome);
-    operacao = null!= operacao? operacao.trim(): '';     
+    
+    operacao = operacao.replaceAll(/\s/g,"");
+    operacao = operacao === "..." ? '': operacao;
+
     const response = await BaseApi.get(
         '/operacoes/carteira/' + login + '/cliente/' + documento + '/' + nome + '/' + operacao)
       .then((response) => {
