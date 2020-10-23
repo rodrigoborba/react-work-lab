@@ -1,7 +1,9 @@
+import ClienteTO from './ClienteTO'
+
 type OperacaoTO = {
     id: number,
-    operacao: string,
-    documento: string,
+    cliente: ClienteTO,
+    operacaoCliente: string,
     nome: string,
     audio: any,
     termo: any,

@@ -1,31 +1,35 @@
 import BaseApi from '../services/BaseApi'
 import { getUserFromToken } from '../Components/seguranca/Auth'
+import { removerMascaraDocumento } from '../utils/Mascaras'
 
-export async function consultarOperacoes(): Promise<any> {
-  //let user = getUserFromToken();
-  const response = await BaseApi.get('/operacoes')
-  return response.data
-}
-
-export async function consultarOperacoesFiltro(operacao: string, documento: string, nome: string) {
-  //let user = getUserFromToken();
-  console.log('passou provider ... ' + getUserFromToken());
-  if (operacao || documento || nome) {
-    await BaseApi.get('/operacoes',
-      {
-        params: {
-          operacao: operacao,
-          documento: documento,
-          nome: nome
-        },
-      })
+export async function consultarOperacoesCarteira(): Promise<any> {
+  let login = getUserFromToken();
+  const response = await BaseApi.get('/operacoes/carteira/' + login)
       .then((response) => {
         return response.data
       })
       .catch(erro => {
         return erro.response.data
       })
+  return response;
+}
+
+export async function consultarOperacoesCarteiraFiltro(operacao: string, documento: string, nome: string) {
+  if (operacao || documento || nome) {
+    let login = getUserFromToken();
+    if(null !== documento){
+      documento = removerMascaraDocumento(documento);     
+    }
+    const response = await BaseApi.get(
+        '/operacoes/carteira/' + login + '/cliente/' + documento + '/' + nome + '/' + operacao)
+      .then((response) => {
+        return response.data
+      })
+      .catch(erro => {
+        return erro.response.data
+      })
+      return response;
   }else{
-    return consultarOperacoes()
+    return consultarOperacoesCarteira()
   }
 }

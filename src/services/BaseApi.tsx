@@ -18,7 +18,7 @@ const config = {
 axios.request(config)
 
 function setHeaderOnConfig (config: AxiosRequestConfig) {
-  //config.headers.Authorization = `Bearer ${keycloak.token}`
+  config.headers.Authorization = `Bearer ${keycloak.token}`
   return config
 }
 

@@ -8,16 +8,15 @@ import GetAppIcon from '@material-ui/icons/GetApp'
 import PublishIcon from '@material-ui/icons/Publish';
 import MaskedInput from 'react-text-mask';
 
-import { consultarOperacoes, consultarOperacoesFiltro } from '../../providers/OperacoesProvider'
+import { consultarOperacoesCarteiraFiltro } from '../../providers/OperacoesProvider'
 import OperacaoTO from '../../models/OperacaoTO' 
 import { init } from '../../Components/seguranca/Auth'
-import { textMaskCPF, textMaskCNPJ } from '../../utils/Mascaras';
-import { getUserFromToken } from '../../Components/seguranca/Auth'
+import { textMaskCPF, textMaskCNPJ, removerMascaraDocumento } from '../../utils/Mascaras';
 
 export interface StateListarOperacoes {
   sistemas: [string, string];
   id: any;
-  operacao: string;
+  operacaoCliente: string;
   documento: string;
   nome: string;
   audio: string;
@@ -59,7 +58,7 @@ export default function ListarOperacoes(props: any) {
   const [values, setValues] = React.useState<StateListarOperacoes>({
     sistemas: ['', ''],
     id: '',
-    operacao: '',
+    operacaoCliente: '',
     documento: '',
     nome: '',
     audio: '',
@@ -88,14 +87,11 @@ export default function ListarOperacoes(props: any) {
   useEffect(() => {
     init('login-required', 'implicit' )
 
-    handleGet();
-
   }, [])
 
   async function handleGet() {
       try {
-        console.log('user no get.. ' + getUserFromToken());
-        await consultarOperacoesFiltro(values.operacao, values.documento, values.nome)
+        await consultarOperacoesCarteiraFiltro(values.operacaoCliente, values.documento, values.nome)
           .then((response) => {
             const lista = response
             const data: any[] = [];
@@ -104,16 +100,15 @@ export default function ListarOperacoes(props: any) {
               (
                 x: { 
                   id: any; 
-                  operacao: any;
-                  documento: any; 
-                  nome: any; 
+                  operacaoCliente: any;
+                  cliente: any; 
                 }
               ) => data.push(
                       { 
                         'Id': x.id, 
-                        'Operação': x.operacao,
-                        'CPF/CNPJ': x.documento,
-                        'Nome': x.nome,  
+                        'Operação': x.operacaoCliente,
+                        'CPF/CNPJ': x.cliente.documento,
+                        'Nome': x.cliente.nomeCliente,  
                       }
                     )
             );
@@ -126,11 +121,8 @@ export default function ListarOperacoes(props: any) {
       }   
   }
 
-  //TODO:
   function retornarMascara() {
-      let conteudoDocumento = values.documento;
-      conteudoDocumento = conteudoDocumento.replaceAll(".", "").replaceAll("-", "").replaceAll("/", "");
-      conteudoDocumento = conteudoDocumento.replaceAll(/\D/g, "");
+      let conteudoDocumento = removerMascaraDocumento(values.documento);
       if(conteudoDocumento.length > 11) {
         return { inputComponent: textMaskCNPJ as any }
       }else{
@@ -226,20 +218,6 @@ export default function ListarOperacoes(props: any) {
     }
   };
 
-  const listaOpcoes: any = {
-    textLabels: {
-      body: {
-        noMatch: "Nenhum registro encontrado",
-        toolTip: "Sort",
-      },
-      pagination: {
-        next: "Próxima página",
-        previous: "Página Anterior",
-        rowsPerPage: "Linhas por página:",
-        displayRows: "de",
-      },
-    }
-  };
     
   return (
     <Container>
@@ -264,8 +242,8 @@ export default function ListarOperacoes(props: any) {
               <TextField
                 id="operacao"
                 label="Operação"
-                value={values.operacao}
-                onChange={handleChange('operacao')}
+                value={values.operacaoCliente}
+                onChange={handleChange('operacaoCliente')}
                 variant="outlined"
                 fullWidth
                 InputProps={{
