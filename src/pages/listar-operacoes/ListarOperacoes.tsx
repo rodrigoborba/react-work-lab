@@ -46,7 +46,7 @@ function TextMaskOperacao(props: TextMaskCustomProps) {
                   ref={(ref: any) => {
                           inputRef(ref ? ref.inputElement : null);
                   }}
-                  mask={[/\d/, '.',/\d/,/\d/, '.', /\d/, /\d/, /\d/, /\d/, /\d/,/\d/, /\d/, /\d/, /\d/, /\d/, '.', /\d/]}
+                  mask={[/\d/, '.',/\d/,/\d/, '.', /\w/, /\d/, /\d/, /\d/, /\d/,/\d/, /\d/, /\d/, /\d/, /\d/, '.', /\d/]}
                   placeholderChar={'\u2000'}
                   showMask
           />
@@ -94,24 +94,27 @@ export default function ListarOperacoes(props: any) {
         await consultarOperacoesCarteiraFiltro(values.operacaoCliente, values.documento, values.nome)
           .then((response) => {
             const lista = response
+            
             const data: any[] = [];
-      
-            lista.map(
-              (
-                x: { 
-                  id: any; 
-                  operacaoCliente: any;
-                  cliente: any; 
-                }
-              ) => data.push(
-                      { 
-                        'Id': x.id, 
-                        'Operação': x.operacaoCliente,
-                        'CPF/CNPJ': x.cliente.documento,
-                        'Nome': x.cliente.nomeCliente,  
-                      }
-                    )
-            );
+            
+            if(lista != null && null == lista.code){
+              lista.map(
+                (
+                  x: { 
+                    id: any; 
+                    operacaoCliente: any;
+                    cliente: any; 
+                  }
+                ) => data.push(
+                        { 
+                          'Id': x.id, 
+                          'Operação': x.operacaoCliente,
+                          'CPF/CNPJ': x.cliente.documento,
+                          'Nome': x.cliente.nomeCliente,  
+                        }
+                      )
+              );
+            }
             setData(data)
           })
         

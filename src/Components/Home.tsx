@@ -16,14 +16,15 @@ function Home() {
   return (
     <Container>
         <div className={classes.perfis}>
-          <p>Para testar o uso de permissões na tela CRUD:</p>
+          <h1>Nota</h1>
+          <p>Empresas registradas para teste até 22/10:</p>
           <ul>
-            <li>Usuário básico: F900072</li>
-            <li>Senha: Zp5%Ve9%Pl</li>
+            <li>Empresa: Cash do Brasil</li>
+            <li>CNPJ: 73141939000140</li>
           </ul>
           <ul>
-            <li>Usuário Admin: F900073</li>
-            <li>Senha: Ix2%Qk9&Jg</li>
+            <li>Empresa: Personal</li>
+            <li>CNPJ: 12837042000160</li>
           </ul>
         </div>
         <Watermark></Watermark>

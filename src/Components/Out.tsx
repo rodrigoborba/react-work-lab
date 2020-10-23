@@ -18,7 +18,7 @@ export interface PropsOut {
 function handleOut(){
     localStorage.setItem('authenricated', "");
     localStorage.setItem('keycloak', "");
-    window.location.href='http://s2ssod02.dreads.bnb:8443/auth/realms/Desenv/protocol/openid-connect/logout?redirect_uri=http://web.dreads.bnb/';
+    window.location.href='http://s2ssod02.dreads.bnb:8443/auth/realms/Desenv/protocol/openid-connect/logout?redirect_uri=' + process.env.REACT_APP_NGINX_ENDPOINT;
 } 
 
 export default function Out(props: PropsOut) {
