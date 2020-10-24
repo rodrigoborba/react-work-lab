@@ -63,10 +63,16 @@ export default function ListarOperacoes(props: any) {
 
   const [data, setData] = useState<OperacaoTO[]>([])
 
+  const [doc, setDoc] = useState('');
+
   useEffect(() => {
     init('login-required', 'implicit' )
 
   }, [])
+
+  const handleChangeDoc = (e: any) => {
+    setDoc(e.currentTarget.value);
+  };
 
   async function handleGet() {
       try {
@@ -104,7 +110,7 @@ export default function ListarOperacoes(props: any) {
   }
 
   function retornarMascara() {
-      let conteudoDocumento = removerMascaraDocumento(values.documento);
+      let conteudoDocumento = removerMascaraDocumento(doc);
       if(conteudoDocumento.length > 11) {
         return { inputComponent: textMaskCNPJ as any }
       }else{
@@ -211,13 +217,14 @@ export default function ListarOperacoes(props: any) {
               <TextField
                 id="documento"
                 label="CPF/CNPJ"
-                value={values.documento}
-                onChange={handleChange('documento')}
+                value={doc}
+                onChange={handleChangeDoc}
                 variant="outlined"
                 fullWidth
+                autoFocus
                 InputProps={
                   retornarMascara()
-                  }
+                }
                 />
             </Grid>
             <Grid item xs={12} md={6} lg={6}>

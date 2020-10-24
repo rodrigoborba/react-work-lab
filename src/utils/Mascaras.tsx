@@ -44,7 +44,16 @@ export function textMaskCNPJ(props: TextMaskCustomProps) {
             <MaskedInput
                     {...other}
                     ref={(ref: any) => {
-                            inputRef(ref ? ref.inputElement : null);
+                        if(ref){
+                                let valorAtual = ref.inputElement.value;
+                                valorAtual = removerMascaraDocumento(valorAtual);
+                                if(valorAtual.length == 12){
+                                        ref.inputElement.setSelectionRange(15,15);    
+                                }
+                                inputRef(ref.inputElement); 
+                        }else{
+                                inputRef(null)
+                        }
                     }}
                     mask={[/\d/, /\d/,'.',/\d/,/\d/,/\d/, '.', /\d/, /\d/, /\d/, '/',/\d/, /\d/,/\d/, /\d/, '-',/\d/, /\d/]}
                     placeholderChar={'\u2000'}
