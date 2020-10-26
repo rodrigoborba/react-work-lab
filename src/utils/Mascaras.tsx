@@ -28,7 +28,7 @@ export function textMaskCPF(props: TextMaskCustomProps) {
           <MaskedInput
                   {...other}
                   ref={(ref: any) => {
-                          inputRef(ref ? ref.inputElement : null);
+                        inputRef(ref ? ref.inputElement : null);
                   }}
                   mask={[/\d/,/\d/,/\d/, '.', /\d/, /\d/, /\d/, '.', /\d/, /\d/,/\d/, '-', /\d/, /\d/, /\d/, /\d/, /\d/]}
                   placeholderChar={'\u2000'}
@@ -54,7 +54,7 @@ export function textMaskCNPJ(props: TextMaskCustomProps) {
                         }else{
                                 inputRef(null)
                         }
-                    }}
+                   }}
                     mask={[/\d/, /\d/,'.',/\d/,/\d/,/\d/, '.', /\d/, /\d/, /\d/, '/',/\d/, /\d/,/\d/, /\d/, '-',/\d/, /\d/]}
                     placeholderChar={'\u2000'}
                     showMask

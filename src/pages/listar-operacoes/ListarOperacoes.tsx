@@ -11,6 +11,16 @@ import { consultarOperacoesCarteiraFiltro } from '../../providers/OperacoesProvi
 import OperacaoTO from '../../models/OperacaoTO' 
 import { init } from '../../Components/seguranca/Auth'
 import { textMaskCPF, textMaskCNPJ, removerMascaraDocumento, formatarDocumento, textMaskOperacao } from '../../utils/Mascaras';
+import { validarCnpj, validarCpf } from '../../utils/ValidacaoUtils'
+
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Button from '@material-ui/core/Button';
+
+import './style.css'
 
 export interface StateListarOperacoes {
   sistemas: [string, string];
@@ -20,7 +30,6 @@ export interface StateListarOperacoes {
   nome: string;
   audio: string;
   termo: string;
-  textmask: string;
   open: boolean;
   messageErro: string;
   message: string;
@@ -42,7 +51,6 @@ export default function ListarOperacoes(props: any) {
     nome: '',
     audio: '',
     termo: '',
-    textmask: '(  )    -    ',
     open: false,
     messageErro: '',
     message: '',
@@ -61,52 +69,72 @@ export default function ListarOperacoes(props: any) {
       });
   };
 
+  const [doc, setDoc] = useState('');
+
+  const handleChangeDoc = (e: any) => {
+    setDoc(e.currentTarget.value);
+  };
+
   const [data, setData] = useState<OperacaoTO[]>([])
 
-  const [doc, setDoc] = useState('');
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     init('login-required', 'implicit' )
 
   }, [])
 
-  const handleChangeDoc = (e: any) => {
-    setDoc(e.currentTarget.value);
-  };
+  function validarDocumento(){
+    let documento = removerMascaraDocumento(doc);
+    let documentoValido = true;
+    if(null != documento && documento != ""){
+      if(documento.length <= 11){
+        documentoValido = validarCpf(documento);
+      }else{
+        documentoValido = validarCnpj(documento);
+      }
+    }
+    return documentoValido;
+  }
 
   async function handleGet() {
-      try {
-        await consultarOperacoesCarteiraFiltro(values.operacaoCliente, values.documento, values.nome)
-          .then((response) => {
-            const lista = response
-            
-            const data: any[] = [];
-            
-            if(lista != null && null == lista.code){
-              lista.map(
-                (
-                  x: { 
-                    id: any; 
-                    operacaoCliente: any;
-                    cliente: any; 
-                  }
-                ) => data.push(
-                        { 
-                          'Id': x.id, 
-                          'Operação': x.operacaoCliente,
-                          'CPF/CNPJ': formatarDocumento(x.cliente.documento),
-                          'Nome': x.cliente.nomeCliente,  
-                        }
-                      )
-              );
-            }
-            setData(data)
-          })
-        
-      } catch (error) {
-          console.log(error);
-          setData([])
-      }   
+      if(validarDocumento()){
+        try {
+          await consultarOperacoesCarteiraFiltro(values.operacaoCliente, doc, values.nome)
+            .then((response) => {
+              const lista = response
+              
+              const data: any[] = [];
+              
+              if(lista != null && null == lista.code){
+                lista.map(
+                  (
+                    x: { 
+                      id: any; 
+                      operacaoCliente: any;
+                      cliente: any; 
+                    }
+                  ) => data.push(
+                          { 
+                            'Id': x.id, 
+                            'Operação': x.operacaoCliente,
+                            'CPF/CNPJ': formatarDocumento(x.cliente.documento),
+                            'Nome': x.cliente.nomeCliente,  
+                          }
+                        )
+                );
+              }
+              setData(data)
+            })
+          
+        } catch (error) {
+            console.log(error);
+            setData([])
+        }   
+      }else{
+        setOpen(true);
+      }
+      
   }
 
   function retornarMascara() {
@@ -123,6 +151,7 @@ export default function ListarOperacoes(props: any) {
       name: "Operação",
       options: {
         filter: true,
+        align: 'right'
       }
     },
     {
@@ -145,12 +174,12 @@ export default function ListarOperacoes(props: any) {
           return (
             <div>
                 <Tooltip title={"Enviar"}>
-                  <IconButton>
+                  <IconButton className="iconButtonOperacoes">
                     <PublishIcon />
                   </IconButton>
                 </Tooltip>
                 <Tooltip title={"Download"}>
-                  <IconButton>
+                  <IconButton className="iconButtonOperacoes">
                     <GetAppIcon />
                   </IconButton>
                 </Tooltip>
@@ -224,7 +253,7 @@ export default function ListarOperacoes(props: any) {
                 autoFocus
                 InputProps={
                   retornarMascara()
-                }
+                  }
                 />
             </Grid>
             <Grid item xs={12} md={6} lg={6}>
@@ -260,6 +289,23 @@ export default function ListarOperacoes(props: any) {
                 <SearchIcon />
                   Pesquisar
               </Buttons>
+              <Dialog
+                    fullScreen={props.fullScreen}
+                    open={open}
+                    onClose={() => setOpen(false)}
+                    aria-labelledby="responsive-dialog-title"
+                >
+                    <DialogContent>
+                            <DialogContentText>
+                                CPF/CNPJ inválido.
+                            </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button color="secondary" onClick={() => setOpen(false)}>
+                            Fechar
+                          </Button>
+                    </DialogActions>
+                </Dialog>
             </Grid>
           </Row>          
 
