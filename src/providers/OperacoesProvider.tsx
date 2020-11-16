@@ -20,7 +20,7 @@ export async function consultarOperacoesCarteiraFiltro(operacao: string, documen
 
     documento = removerMascaraDocumento(documento);
     
-    operacao = operacao.replaceAll(/\s/g,"");
+    operacao = operacao.replace(/\s/g,"");
     operacao = operacao === "..." ? '': operacao;
 
     const response = await BaseApi.get(

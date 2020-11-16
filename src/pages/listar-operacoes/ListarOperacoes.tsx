@@ -1,7 +1,7 @@
 import React, {useState, useEffect } from "react";
 import { Container, Snack, Buttons, Row, Page } from 'bnb-ui/dist'
 import MUIDataTable from 'mui-datatables';
-import { IconButton, Tooltip, Grid, TextField  } from '@material-ui/core';
+import { IconButton, Tooltip, Grid, TextField} from '@material-ui/core';
 
 import SearchIcon from '@material-ui/icons/SearchOutlined'
 import GetAppIcon from '@material-ui/icons/GetApp'
@@ -19,6 +19,9 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
+import { Link } from 'react-router-dom';
+
+
 
 import './style.css'
 
@@ -147,11 +150,26 @@ export default function ListarOperacoes(props: any) {
   }
 
   const columns: any = [
+    
     {
       name: "Operação",
       options: {
         filter: true,
-        align: 'right'
+        align: 'right',
+        customBodyRender: (value: any, tableMeta: { rowData: [] }, updateValue: any) => {
+          return (
+              <div>
+                  <Link to={'/solicitacaoParcelamento/Parcelamento/' + value}                 
+  
+  
+>
+{value}
+</Link>
+                   
+              </div>
+          );
+      }
+               
       }
     },
     {

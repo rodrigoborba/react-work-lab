@@ -1,6 +1,6 @@
 {
   "name": "s549-empresa-web",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "proxy": "https://5f86e13cc8a16a0016e6bd9f.mockapi.io",
   "dependencies": {
@@ -31,6 +31,7 @@
     "js-base64": "^3.5.2",
     "moment": "^2.29.1",
     "mui-datatables": "^2.11.0",
+    "rc-touchable": "^1.3.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-number-format": "^4.4.1",
