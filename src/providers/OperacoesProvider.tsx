@@ -2,6 +2,7 @@ import BaseApi from '../services/BaseApi'
 import { getLoggedUser } from '../Components/seguranca/Auth'
 import { removerMascaraDocumento } from '../utils/Mascaras'
 
+
 export async function consultarOperacoesCarteira(): Promise<any> {
   let login = getLoggedUser();
   const response = await BaseApi.get('/operacoes/carteira/' + login)

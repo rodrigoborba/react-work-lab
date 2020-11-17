@@ -23,6 +23,7 @@ import { Link } from 'react-router-dom';
 
 
 
+
 import './style.css'
 
 export interface StateListarOperacoes {
@@ -159,12 +160,9 @@ export default function ListarOperacoes(props: any) {
         customBodyRender: (value: any, tableMeta: { rowData: [] }, updateValue: any) => {
           return (
               <div>
-                  <Link to={'/solicitacaoParcelamento/Parcelamento/' + value}                 
-  
-  
->
-{value}
-</Link>
+                  <Link to={'/solicitacaoParcelamento/Parcelamento/' + value}>         
+           {value}
+                </Link>
                    
               </div>
           );
