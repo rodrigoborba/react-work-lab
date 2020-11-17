@@ -23,6 +23,7 @@ import { Link } from 'react-router-dom';
 
 
 
+
 import './style.css'
 
 export interface StateListarOperacoes {
@@ -82,10 +83,8 @@ export default function ListarOperacoes(props: any) {
 
   const [open, setOpen] = useState(false);
 
-  const [errorMessage, setErrorMessage] = useState('');
-
   useEffect(() => {
-    //init('login-required', 'implicit' )
+    init('login-required', 'implicit' )
 
   }, [])
 
@@ -102,44 +101,7 @@ export default function ListarOperacoes(props: any) {
     return documentoValido;
   }
 
-  function validarParcelas(): boolean {
-    let valorParcelaValido = true;
-
-    if(true){
-      setErrorMessage('A quantidade de parcelas não pode ser igual a zero.');
-      valorParcelaValido = false;
-    }
-    if(false){
-      setErrorMessage('A quantidade de parcelas não pode ser superior a 6 (seis).');
-      valorParcelaValido = false;
-    }
-    return valorParcelaValido;
-  }
-
-  function validarValorAmortizacaoPrevia(): boolean {
-    let valorAmortizacaoValido = true;
-
-    if(true){
-      setErrorMessage('O valor informado para a amortização prévia é inferior a 35% do valor do saldo devedor atualizado por encargos contratuais.');
-      valorAmortizacaoValido = false;
-    }
-    if(false){
-      setErrorMessage('O valor informado para a amortização prévia é superior ao valor total devido da operação.');
-      valorAmortizacaoValido = false;
-    }
-    return validarParcelas() && validarValorAmortizacaoPrevia();
-  }
-
-  function validarCriterios() : boolean {
-    return validarValorAmortizacaoPrevia() && validarParcelas();
-  }
-
   async function handleGet() {
-      if(validarCriterios()){
-
-      }else{
-        setOpen(true);
-      }
       if(validarDocumento()){
         try {
           await consultarOperacoesCarteiraFiltro(values.operacaoCliente, doc, values.nome)
@@ -198,12 +160,9 @@ export default function ListarOperacoes(props: any) {
         customBodyRender: (value: any, tableMeta: { rowData: [] }, updateValue: any) => {
           return (
               <div>
-                  <Link to={'/solicitacaoParcelamento/Parcelamento/' + value}                 
-  
-  
->
-{value}
-</Link>
+                  <Link to={'/solicitacaoParcelamento/Parcelamento/' + value}>         
+           {value}
+                </Link>
                    
               </div>
           );
@@ -339,7 +298,6 @@ export default function ListarOperacoes(props: any) {
                   />
             </Grid>
           </Row>
-          
 
           <Row>
             <Grid item xs={12} md={12}>
@@ -355,7 +313,7 @@ export default function ListarOperacoes(props: any) {
                 >
                     <DialogContent>
                             <DialogContentText>
-                                CPF/CNPJ inválido. {errorMessage}
+                                CPF/CNPJ inválido.
                             </DialogContentText>
                     </DialogContent>
                     <DialogActions>

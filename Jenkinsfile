@@ -88,28 +88,22 @@ pipeline {
 		}	
 		//Verificação Sonar
 		stage ('Verificação Sonar') {
-			//agent {
-			//	docker {
-					// imagem docker node
-			//		image 'repo.dreads.bnb:8083/bnb/node_10-openjdk_8:v1'
-					//Mapeamento de diretorios para que o Docker tenha acesso no servidor						                    
-			//		args "-v /tmp:/tmp:rw,z -w $env.$JENKINS_HOME -v $JENKINS_HOME/workspace:$env.JENKINS_HOME/workspace:rw,z -v $JENKINS_HOME/tools:$env.JENKINS_HOME/tools:rw,z"
-			//	}
-		   //}
 		   steps {		   
 			   echo "Fazendo Sonar do $env.JOB_BASE_NAME e componente $JOB_COMPONENTE"
 			   
-			   //script {
-
-					  //validarSonar(getProperty("BRANCH_STREAM"))
-					  echo "skip 1"
-			   //}
+			   script {
+			   
+					 //prepara propriedades do sonar
+					  appendToFile ("", "sonar-project.properties", "sonar.projectName=" + getProperty("JOB_COMPONENTE") + "\nsonar.projectVersion=" + env.BUILD_NUMBER + "\nsonar.branch=" + getProperty("BRANCH_STREAM") + "\nsonar.projectKey=TypeScript:" + getProperty("JOB_COMPONENTE"))
+			   
+					  validarSonar(getProperty("BRANCH_STREAM"))
+			   }
 			   
 			   echo "Salvando dados Sonar do $env.JOB_BASE_NAME e componente $JOB_COMPONENTE"
-			   //salvarDadosSonar('desenvolvimento')
-			   echo "skip 2"
+			   salvarDadosSonar('desenvolvimento')
 		   }
 		}//Verificação Sonar
+		
 		//publicacao
 		stage('Gerar Imagem Nexus') {
 			steps {
@@ -237,20 +231,20 @@ def salvarDadosSonar(ambiente) {
 	script {
 
 		echo "Gravando informações adicionais da snapshot"
-		appendToFile ("/target/sonar", "report-task.txt", "snapshotid=" + getProperty("team_scm_snapshotUUID") + "\nbuildnumber=" + env.BUILD_NUMBER)
+		appendToFile ("/.scannerwork", "report-task.txt", "snapshotid=" + getProperty("team_scm_snapshotUUID") + "\nbuildnumber=" + env.BUILD_NUMBER)
 			
 			dir("../$env.JOB_BASE_NAME/$JOB_CAMINHO_APLICACAO") {
 				
 					echo "Salvando dados Sonar"
 					try {
-						sh "java -jar $env.SONAR_PIPELINE/s095-jenkins-sonar-tool.jar -c ./target/sonar/report-task.txt -p $PROJECT_AREA -s http://s2docd02.dreads.bnb:8888"
+						sh "java -jar $env.SONAR_PIPELINE/s095-jenkins-sonar-tool.jar -c ./.scannerwork/report-task.txt -p $PROJECT_AREA -s http://s2docd02.dreads.bnb:8888"
 			
 					} catch (Exception e) {
 						error "Houve erro para obter os arquivos do Sonar: $e"
 					}
 					echo "Terminando de salvar dados Sonar"
 			}
-			if ((env['QUALITYGATE_STATUS'] == "ERROR") && (env['AMBIENTE'] == "release")) {
+			if ((env['QUALITYGATE_STATUS'] == "ERROR")) {
                 currentBuild.result = "FAILURE"
                 error('Resultado do QualityGate:' + env['QUALITYGATE_STATUS'])
             }						

@@ -99,5 +99,31 @@ export function formatarDocumento(value: string) {
 }
 
 
+export function FormatValorMoedaReal (valor: number): string {
+        if (valor < 0) {
+          return `(${Math.abs(valor).toLocaleString('pt-br', { style: 'currency', currency: 'BRL' })})`
+        }
+        return `${valor.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' })}`
+}
+
+export function mascaraMonetaria(valor: string) {
+    
+        if(!valor.includes('.')){
+            valor = valor + '.00'
+        }
+        let valorNumber  = parseFloat(valor)
+        valor = valorNumber.toFixed(2).toString()
+        valor = valor.replace(/[\D]+/g,'');
+        valor = valor.replace(/([0-9]{2})$/g, ",$1");
+    
+        if (valor.length > 6) {
+            valor = valor.replace(/([0-9]{3}),([0-9]{2}$)/g, ".$1,$2");
+        }
+        return (
+            valor
+        );    
+    }
+
+
 
 
