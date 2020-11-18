@@ -1,7 +1,7 @@
 import React, {useState, useEffect } from "react";
 import { Container, Snack, Buttons, Row, Page } from 'bnb-ui/dist'
 import MUIDataTable from 'mui-datatables';
-import { Grid, TextField  } from '@material-ui/core';
+import { Grid, TextField, Box  } from '@material-ui/core';
 
 import { detalharOperacaoCliente, salvarSolicitacaoParcelamento } from '../../providers/ParcelamentoProvider'
 import AmortizacaoPreviaTO from '../../models/AmortizacaoPreviaTO'
@@ -16,13 +16,24 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
 import { Fieldset } from 'bnb-ui/dist';
 import { Col } from 'bnb-ui/dist';
-import { FormatValorMoedaReal, mascaraMonetaria} from '../../utils/Mascaras'
+import { FormatValorMoedaReal } from '../../utils/Mascaras'
 import Info from '../../constants/info';
 import Sucess from '../../constants/sucess'
 import Message from '../../message'
 import DialogSimNao from '../../dialog'
 
+import { makeStyles } from '@material-ui/core/styles';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Paper from '@material-ui/core/Paper';
+
+
 import { validarParcelas, validarValorAmortizacaoPrevia } from '../../services/ParcelamentoService'
+
 
 export interface StateParcelamento {
     sistemas: [string, string];
@@ -56,6 +67,13 @@ export interface StateParcelamento {
 
 
 export default (props: any)=>{
+
+    const useStyles = makeStyles({
+      table: {
+      },
+    });
+
+    const classes = useStyles();
 
     const [values, setValues] = React.useState<StateParcelamento>({
         sistemas: ['', ''],
@@ -211,129 +229,150 @@ export default (props: any)=>{
           });
       };
 
+      function createRow(descricao: string, valor: string) {
+        return { descricao, valor};
+      }
 
+      const rowsMinimo = [
+        createRow('Saldo devedor', FormatValorMoedaReal(saldoMinimo)),
+        createRow('Amortização Prévia', FormatValorMoedaReal(amortizacaoMinima)),
+        createRow('Tarifa', FormatValorMoedaReal(tarifaMinima)),
+      ];
+
+      const rowsMaximo = [
+        createRow('Saldo devedor', FormatValorMoedaReal(saldoMaximo)),
+        createRow('Amortização Prévia', FormatValorMoedaReal(amortizacaoMaxima)),
+        createRow('Tarifa', FormatValorMoedaReal(tarifaMaxima)),
+      ];
 
       return (
           <Container>
-            <Page pagetitle="Dados de Indentificação do Cliente/Operação" history={props.history}>
+            <Page pagetitle="Solicitação de Parcelamento" history={props.history}>
 
-              <Row>
+              <Fieldset subtitle="Dados de Identificação do Cliente/Operação"> 
 
-                <Grid item xs={12} md={6} lg={6}>
-                  <TextField
-                    id="documento"
-                    label="CPF/CNPJ"
-                    value={formatarDocumento(doc.toString())}
+                  <Row>
+                    <Grid item xs={12} md={12} lg={12}>
+                    <TextField
+                        id="nome"
+                        label="Nome do Cliente"
+                        value={nomeClie}
+                        disabled
+                        variant="outlined"
+                        fullWidth
+                          />
+                    </Grid>
+                  </Row>
 
+                  <Row>
 
-                    fullWidth
-                    autoFocus
-                    disabled
+                    <Grid item xs={12} md={6} lg={6}>
+                      <TextField
+                        id="documento"
+                        label="CPF/CNPJ"
+                        value={formatarDocumento(doc.toString())}
 
-                    />
-                </Grid>
-                <Grid item xs={12} md={6} lg={6}>
-                  <TextField
-                    id="operacao"
-                    label="Operação"
-                    value={operacao}
-                    disabled
+                        variant="outlined"
+                        fullWidth
+                        autoFocus
+                        disabled
 
-                    fullWidth
-                    InputProps={{
-                      inputComponent: textMaskOperacao as any,
-                    }}
-                    />
-                </Grid>
-              </Row>
+                        />
+                    </Grid>
+                    <Grid item xs={12} md={6} lg={6}>
+                      <TextField
+                        id="operacao"
+                        label="Operação"
+                        value={operacao}
+                        disabled
+                        variant="outlined"
+                        fullWidth
+                        InputProps={{
+                          inputComponent: textMaskOperacao as any,
+                        }}
+                        />
+                    </Grid>
+                  </Row>
 
-              <Row>
-                <Grid item xs={12} md={12}>
-                  <TextField
-                    id="nome"
-                    label="Nome"
-                    value={nomeClie}
-                    disabled
+                  <Row>
+                    <Grid item xs={12} md={12}>
+                      <TextField
+                        id="telefone"
+                        label="Telefone Cliente"
+                        disabled
+                        value={contatos}
+                        variant="outlined"
 
-                    fullWidth
-                      />
-                </Grid>
-              </Row>
-
-              <Row>
-                <Grid item xs={12} md={12}>
-                  <TextField
-                    id="telefone"
-                    label="Telefone"
-                    disabled
-                    value={contatos}
-
-
-                    fullWidth
-                      />
-                </Grid>
-              </Row>
-
+                        fullWidth
+                          />
+                    </Grid>
+                  </Row>
+                </Fieldset>            
 
               <Fieldset subtitle="Parâmetros de Referencia da Operação">
 
-
                 <Row>
-                    <Col sm={6}>
-                      <TextField id="saldoDevedorMinimo" label="Saldo devedor Mínimo"
+                  <Grid item xs={6} md={6} lg={6}>
 
-                        value={mascaraMonetaria(saldoMinimo.toString())}
+                    <TableContainer component={Paper}>
+                      <Table className={classes.table} aria-label="spanning table">
+                        <TableHead>
+                          <TableRow>
+                            <TableCell align="center" colSpan={2}>
+                              Valor Mínimo
+                            </TableCell>
+                            
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {rowsMinimo.map((row) => (
+                            <TableRow key={row.descricao}>
+                              <TableCell align="left">{row.descricao}</TableCell>
+                              <TableCell align="center">{row.valor}</TableCell>
+                            </TableRow>
+                          ))}
 
-                        disabled
-                        fullWidth
-                        required />
-                    </Col>
+                          
+                        </TableBody>
+                      </Table>
+                    </TableContainer> 
 
-                    <Col sm={6}>
-                      <TextField id="amortizacaoMinima" label="Amortizacão Prévia Mínima"
-                      value={mascaraMonetaria(amortizacaoMinima.toString())}
+                    </Grid>        
 
-                      disabled  fullWidth required />
-                    </Col>
+                    <Grid item xs={6} md={6} lg={6}>
 
-                    <Col sm={6}>
-                      <TextField id="tarifaMinima" label="Tarifa Mínima"
+                    <TableContainer component={Paper}>
+                      <Table className={classes.table} aria-label="spanning table">
+                        <TableHead>
+                          <TableRow>
+                            <TableCell align="center" colSpan={2}>
+                              Valor Máximo
+                            </TableCell>
+                            
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {rowsMaximo.map((row) => (
+                            <TableRow key={row.descricao}>
+                              <TableCell align="left">{row.descricao}</TableCell>
+                              <TableCell align="center">{row.valor}</TableCell>
+                            </TableRow>
+                          ))}
 
-                        value={mascaraMonetaria(tarifaMinima.toString())}
-                        disabled
-                        fullWidth required />
-                    </Col>
+                          
+                        </TableBody>
+                      </Table>
+                    </TableContainer> 
 
-                    <Col sm={6}>
-                      <TextField id="saldoDevedorMaximo" label="Saldo devedor Máximo"
-
-                        value={mascaraMonetaria(saldoMaximo.toString())}
-                        disabled
-                        fullWidth required />
-                    </Col>
-
-                    <Col sm={6}>
-                      <TextField id="amortizacaoMaxima" label="Amortizacão Prévia Máxima"
-
-                        value={mascaraMonetaria(amortizacaoMaxima.toString())}
-                        disabled
-                        fullWidth required />
-                    </Col>
-
-                    <Col sm={6}>
-                      <TextField id="tarifaMaxima" label="Tarifa Máxima"
-
-                        value={mascaraMonetaria(tarifaMaxima.toString())}
-                        disabled   fullWidth required />
-                    </Col>
+                    </Grid>    
                 </Row>
-
 
               </Fieldset>
 
 
               <Fieldset subtitle="Valores Negociados com o cliente">
 
+                      
                 <Row>
                   <Col sm={6}>
                     <TextField id="amortizacaoPrevia" label="Amortização Prévia"
@@ -347,13 +386,16 @@ export default (props: any)=>{
                       onChange={handleChange('saldoDevedor')}
                       variant="outlined" fullWidth required />
                   </Col>
+                </Row> 
 
+                  <Row>              
                   <Col sm={6}>
                     <TextField id="quantidadeParcelas" label="Quantidade de Parcelas" value={values.quantidadePacelas}
                       onChange={handleChange('quantidadePacelas')}
                       variant="outlined" fullWidth required />
                   </Col>
-                </Row>
+                </Row>          
+
 
               </Fieldset>
 

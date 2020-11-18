@@ -1,5 +1,5 @@
 
-import { validarCpf,validarCnpj  } from '../../utils/ValidacaoUtils'
+import { validarCpf,validarCnpj  } from './ValidacaoUtils'
 
 describe('Testes componente utiliário para validações de formatos', () =>{
 
