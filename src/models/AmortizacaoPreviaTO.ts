@@ -6,9 +6,11 @@ export default class AmortizacaoPreviaTO  {
     codigoOperacao!: string;
     valorMinimoAmortizacao!: number;
     valorMaximoAmortizacao!: number;
-    valorTarifa!: number;
+    valorTarifaMinima!: number;
+    valorTarifaMaxima!: number;
     valorNegociadoAmortizacao!: number;
     qtdeParcela!:number;
+    valorSaldoDevedor!:number;
     statusAmortizacao!:string;
 
 }

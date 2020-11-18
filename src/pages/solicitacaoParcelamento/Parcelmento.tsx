@@ -4,10 +4,9 @@ import MUIDataTable from 'mui-datatables';
 import { Grid, TextField  } from '@material-ui/core';
 
 import { detalharOperacaoCliente, salvarSolicitacaoParcelamento } from '../../providers/ParcelamentoProvider'
-import AmortizacaoPreviaTO from '../../models/AmortizacaoPreviaTO' 
+import AmortizacaoPreviaTO from '../../models/AmortizacaoPreviaTO'
 import { init } from '../../Components/seguranca/Auth'
-import { textMaskCPF, textMaskCNPJ, removerMascaraDocumento, formatarDocumento, textMaskOperacao } from '../../utils/Mascaras';
-import { validarCnpj, validarCpf } from '../../utils/ValidacaoUtils'
+import { formatarDocumento, textMaskOperacao } from '../../utils/Mascaras';
 
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -15,7 +14,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
-import { Fieldset } from 'bnb-ui/dist'; 
+import { Fieldset } from 'bnb-ui/dist';
 import { Col } from 'bnb-ui/dist';
 import { FormatValorMoedaReal, mascaraMonetaria} from '../../utils/Mascaras'
 import Info from '../../constants/info';
@@ -23,10 +22,7 @@ import Sucess from '../../constants/sucess'
 import Message from '../../message'
 import DialogSimNao from '../../dialog'
 
-
-
-
-
+import { validarParcelas, validarValorAmortizacaoPrevia } from '../../services/ParcelamentoService'
 
 export interface StateParcelamento {
     sistemas: [string, string];
@@ -55,7 +51,7 @@ export interface StateParcelamento {
     authenticated?: any;
     retorno?: any;
     openSnack?:  any;
-   
+
   }
 
 
@@ -114,63 +110,49 @@ export default (props: any)=>{
       const [exibirModalSucesso, setExibirModalSucesso] = useState(false)
       const [dialogSimNao, setDialogSimNao] = useState(false)
       const [dialogSimNaoMensagem, setDialogSimNaoMensagem] = useState('')
-      
+
       const [amortizacao, setAmortizacao] = useState<AmortizacaoPreviaTO>(new AmortizacaoPreviaTO())
 
       const [errorMessage, setErrorMessage] = useState('');
 
       const [validationMessageOpen, setValidationMessageOpen] = useState(false);
 
-      function validarParcelas(value: number): boolean {
-        let valorParcelaValido = true;
-    
-        if(value === 0){
-          setErrorMessage('A quantidade de parcelas não pode ser igual a zero.');
-          valorParcelaValido = false;
+      function validarCriterios(valorAmortizacao : number, quantidadeParcelas: number) : boolean {
+        
+        let retornoValidacaoAmortizacao = validarValorAmortizacaoPrevia(
+                                              valorAmortizacao,
+                                              amortizacaoMinima,
+                                              tarifaMinima,
+                                              saldoMaximo);
+
+        if(!retornoValidacaoAmortizacao.valido){
+          setErrorMessage(retornoValidacaoAmortizacao.mensagem);
         }
-        if(value > 6){
-          setErrorMessage('A quantidade de parcelas não pode ser superior a 6 (seis).');
-          valorParcelaValido = false;
+
+        let retornoValidacaoParcelas = validarParcelas(quantidadeParcelas);
+        if(!retornoValidacaoParcelas.valido){
+          setErrorMessage(retornoValidacaoParcelas.mensagem);
         }
-        return valorParcelaValido;
+
+        return retornoValidacaoAmortizacao.valido &&  retornoValidacaoParcelas.valido;
       }
-    
-      function validarValorAmortizacaoPrevia(value: number): boolean {
-        let valorAmortizacaoValido = true;
-    
-        if(value < amortizacaoMinima + tarifaMinima){
-          setErrorMessage('O valor informado para a amortização prévia é inferior a 35% do valor do saldo devedor atualizado por encargos contratuais.');
-          valorAmortizacaoValido = false;
-        }
-        if(value > saldoMaximo){
-          setErrorMessage('O valor informado para a amortização prévia é superior ao valor total devido da operação.');
-          valorAmortizacaoValido = false;
-        }
-        return valorAmortizacaoValido;
-      }
-    
-      function validarCriterios() : boolean {
-        return validarValorAmortizacaoPrevia(values.valorAmortizacao) 
-          && validarParcelas(values.quantidadePacelas);
-      }
- 
+
       async function handleGetSalvarParcelamento() {
-        if(validarCriterios()){
+        if(validarCriterios(values.valorAmortizacao, values.quantidadePacelas)){
           montarParcelamentoSalvar(props)
           await salvarSolicitacaoParcelamento(amortizacao)
-          .then((response) => {         
+          .then((response) => {
             exibirMensagemSucesso(Info.PARCELAMENTO_CADASTRO_SUCESSO)
-            setExibirMensagem(Sucess.PARCELAMENTO_SALVO_SUCESSO)      
-          
+            setExibirMensagem(Sucess.PARCELAMENTO_SALVO_SUCESSO)
+
           }).catch((error) => {
             console.log(error);
           })
         }else{
           setValidationMessageOpen(true);
         }
-        
-      }
 
+      }
 
       function exibirMensagemSucesso (mensagem: string) {
         setExibirMensagem(mensagem)
@@ -178,7 +160,7 @@ export default (props: any)=>{
       }
 
       function montarParcelamentoSalvar (response: any) {
-       
+
         amortizacao.codigoOperacao =  operacao;
         amortizacao.cpfCnpj  =  doc;
         amortizacao.dataSolicitacao = new Date();
@@ -186,36 +168,37 @@ export default (props: any)=>{
         amortizacao.nomeEmpresa = nomeEmpresa;
         amortizacao.valorMaximoAmortizacao = amortizacaoMaxima;
         amortizacao.valorMinimoAmortizacao = amortizacaoMinima
-        amortizacao.valorTarifa = tarifaMaxima;
+        amortizacao.valorTarifaMinima = tarifaMinima;
+        amortizacao.valorTarifaMaxima = tarifaMaxima;
         amortizacao.qtdeParcela = values.quantidadePacelas;
         amortizacao.valorNegociadoAmortizacao = values.valorAmortizacao;
-         
+        amortizacao.valorSaldoDevedor = values.saldoDevedor;
 
       }
 
       async function handleGet() {
-       
+
         try {
           const retorno = await detalharOperacaoCliente(props.match.params.operacaoCliente)
           console.log(retorno)
           setDoc(retorno.cliente.documento);
           setNomeClie(retorno.cliente.nomeCliente)
-          setOperacao(retorno.operacaoCliente) 
+          setOperacao(retorno.operacaoCliente)
           setTarifaMinima(retorno.tarifaMinima ? retorno.tarifaMinima: 0)
           setTarifaMaxima(retorno.tarifaMaxima ? retorno.tarifaMaxima: 0)
           setSaldoMaximo(retorno.saldoDevedorMaximo ? retorno.saldoDevedorMaximo: 0)
           setSaldoMinimo(retorno.saldoDevedorMinimo ? retorno.saldoDevedorMinimo: 0)
           setAmortizacaoMinima(retorno.amortizacaoMinima ? retorno.amortizacaoMinima: 0)
-          setAmortizacaoMaxima(retorno.amortizacaoMaxima ? retorno.amortizacaoMaxima: 0) 
+          setAmortizacaoMaxima(retorno.amortizacaoMaxima ? retorno.amortizacaoMaxima: 0)
           setContatos(retorno.cliente.contatos)
           setNomeEmpresa(retorno.nomeEmpresa)
-          
+
         } catch (error) {
             console.log(error);
-            
-        }   
+
+        }
       }
-     
+
       async function cancelarSolicitacaoParcelamento () {
         setDialogSimNao(true)
         setDialogSimNaoMensagem('Deseja cancelar?')
@@ -227,26 +210,26 @@ export default (props: any)=>{
                   [name]: event.target.value,
           });
       };
-     
 
-   
+
+
       return (
           <Container>
             <Page pagetitle="Dados de Indentificação do Cliente/Operação" history={props.history}>
-        
+
               <Row>
-                
+
                 <Grid item xs={12} md={6} lg={6}>
                   <TextField
                     id="documento"
                     label="CPF/CNPJ"
                     value={formatarDocumento(doc.toString())}
-                  
-                  
+
+
                     fullWidth
                     autoFocus
                     disabled
-                  
+
                     />
                 </Grid>
                 <Grid item xs={12} md={6} lg={6}>
@@ -255,42 +238,42 @@ export default (props: any)=>{
                     label="Operação"
                     value={operacao}
                     disabled
-                    
+
                     fullWidth
                     InputProps={{
                       inputComponent: textMaskOperacao as any,
                     }}
                     />
                 </Grid>
-              </Row>           
-        
-              <Row>  
+              </Row>
+
+              <Row>
                 <Grid item xs={12} md={12}>
                   <TextField
                     id="nome"
                     label="Nome"
                     value={nomeClie}
                     disabled
-                    
+
                     fullWidth
                       />
                 </Grid>
               </Row>
 
-              <Row>  
+              <Row>
                 <Grid item xs={12} md={12}>
                   <TextField
                     id="telefone"
                     label="Telefone"
                     disabled
                     value={contatos}
-                  
-                  
+
+
                     fullWidth
                       />
                 </Grid>
               </Row>
-        
+
 
               <Fieldset subtitle="Parâmetros de Referencia da Operação">
 
@@ -298,54 +281,54 @@ export default (props: any)=>{
                 <Row>
                     <Col sm={6}>
                       <TextField id="saldoDevedorMinimo" label="Saldo devedor Mínimo"
-                      
+
                         value={mascaraMonetaria(saldoMinimo.toString())}
-                        
-                        disabled 
+
+                        disabled
                         fullWidth
                         required />
                     </Col>
-                    
+
                     <Col sm={6}>
-                      <TextField id="amortizacaoMinima" label="Amortizacão Prévia Mínima" 
+                      <TextField id="amortizacaoMinima" label="Amortizacão Prévia Mínima"
                       value={mascaraMonetaria(amortizacaoMinima.toString())}
-                  
-                    disabled  fullWidth required />
+
+                      disabled  fullWidth required />
                     </Col>
 
                     <Col sm={6}>
-                      <TextField id="tarifaMinima" label="Tarifa Mínima" 
-                    
+                      <TextField id="tarifaMinima" label="Tarifa Mínima"
+
                         value={mascaraMonetaria(tarifaMinima.toString())}
-                        disabled 
+                        disabled
                         fullWidth required />
                     </Col>
 
                     <Col sm={6}>
                       <TextField id="saldoDevedorMaximo" label="Saldo devedor Máximo"
-                      
+
                         value={mascaraMonetaria(saldoMaximo.toString())}
-                        disabled 
+                        disabled
                         fullWidth required />
                     </Col>
 
                     <Col sm={6}>
-                      <TextField id="amortizacaoMaxima" label="Amortizacão Prévia Máxima" 
-              
+                      <TextField id="amortizacaoMaxima" label="Amortizacão Prévia Máxima"
+
                         value={mascaraMonetaria(amortizacaoMaxima.toString())}
-                        disabled 
+                        disabled
                         fullWidth required />
                     </Col>
 
                     <Col sm={6}>
                       <TextField id="tarifaMaxima" label="Tarifa Máxima"
-                    
+
                         value={mascaraMonetaria(tarifaMaxima.toString())}
                         disabled   fullWidth required />
                     </Col>
                 </Row>
 
-          
+
               </Fieldset>
 
 
@@ -360,20 +343,20 @@ export default (props: any)=>{
                   </Col>
 
                   <Col sm={6}>
-                    <TextField id="saldoDevedor" disabled label="Saldo Devedor" value={values.saldoDevedor} 
+                    <TextField id="saldoDevedor" disabled label="Saldo Devedor" value={values.saldoDevedor}
                       onChange={handleChange('saldoDevedor')}
                       variant="outlined" fullWidth required />
                   </Col>
 
                   <Col sm={6}>
-                    <TextField id="quantidadeParcelas" label="Quantidade de Parcelas" value={values.quantidadePacelas} 
+                    <TextField id="quantidadeParcelas" label="Quantidade de Parcelas" value={values.quantidadePacelas}
                       onChange={handleChange('quantidadePacelas')}
                       variant="outlined" fullWidth required />
                   </Col>
                 </Row>
-          
+
               </Fieldset>
-      
+
               <Dialog
                       fullScreen={props.fullScreen}
                       open={validationMessageOpen}
@@ -396,10 +379,10 @@ export default (props: any)=>{
                     <Buttons  variant="contained" color="primary" autoFocus onClick={()=> cancelarSolicitacaoParcelamento()} >Cancelar</Buttons>
                     <Buttons variant="contained" color="primary" autoFocus onClick={()=> handleGetSalvarParcelamento()}>Submeter</Buttons>
                 </DialogActions>
-          
+
 
               <Snack variant={values.variant} message={values.message} open={values.openSnack} ></Snack>
-      
+
             </Page>
 
           <Message
@@ -416,10 +399,10 @@ export default (props: any)=>{
             }}
             nao={() => {
               setDialogSimNao(false)
-                    
+
             }} />
-          
+
           </Container>
       )
-       
+
 }

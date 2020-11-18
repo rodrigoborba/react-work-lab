@@ -7,7 +7,6 @@ export function getUserFromToken(token: any): string {
         let user = '';
         JSON.parse(tokenData, (key, value) => {
           if (key === 'preferred_username') {
-            console.log('logged user = [' + key + ' ' + value + ']');
             user = value;
           }
         });

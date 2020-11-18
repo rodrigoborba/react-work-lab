@@ -1,5 +1,10 @@
 'use strict';
 
+export interface RetornoValidacao {
+  valido: boolean;
+  mensagem: string;
+}
+
 function isRepeatingNumber(valor: string){
     return /^(\d)(\1){10}$/.test(valor);
 }
