@@ -45,7 +45,7 @@ export interface StateParcelamento {
     operacaoCliente: string;
     open: boolean;
     saldoDevedor:number,
-    valorAmortizacao:number,
+    valorAmortizacao: any,
     saldoDevedorMinimo:number,
     saldoDevedorMaximo:number,
     valorMinimoAmortizacao: number;
@@ -53,7 +53,7 @@ export interface StateParcelamento {
     valorTarifaMinima: number;
     valorTarifaMaxima: number;
     valorNegociado: number;
-    quantidadePacelas:number;
+    quantidadePacelas: any;
     messageErro: string;
     message: string;
     variant: any;
@@ -85,7 +85,7 @@ export default (props: any)=>{
         operacaoCliente: '',
         open: false,
         saldoDevedor:0,
-        valorAmortizacao:0,
+        valorAmortizacao: undefined,
         saldoDevedorMinimo:0,
         saldoDevedorMaximo:0,
         valorMinimoAmortizacao:0,
@@ -93,7 +93,7 @@ export default (props: any)=>{
         valorTarifaMinima: 0,
         valorTarifaMaxima: 0,
         valorNegociado: 0,
-        quantidadePacelas: 0,
+        quantidadePacelas: undefined,
         messageErro: '',
         message: '',
         variant: '',
@@ -106,9 +106,7 @@ export default (props: any)=>{
       });
 
       useEffect(() => {
-       console.log(props.match.params.operacaoCliente)
        handleGet()
-
 
       },[]);
 
@@ -135,6 +133,25 @@ export default (props: any)=>{
 
       const [validationMessageOpen, setValidationMessageOpen] = useState(false);
 
+      const [errors, setErrors] = useState({ valorAmortizacao: '', quantidadePacelas: '' });
+
+      const validate = (fieldValues = values) => {
+          let temp = { valorAmortizacao: "", quantidadePacelas: "" }
+          if ('quantidadePacelas' in fieldValues){
+            temp.quantidadePacelas = fieldValues.quantidadePacelas ? "" : "Este campo é obrigatório."  
+          }
+              
+          if ('valorAmortizacao' in fieldValues){
+              temp.valorAmortizacao = fieldValues.valorAmortizacao ? "" : "Este campo é obrigatório."
+          }
+          setErrors({
+              ...temp
+          })
+
+          if (fieldValues == values)
+              return Object.values(temp).every(item => item == "")
+      }
+
       function validarCriterios(valorAmortizacao : number, quantidadeParcelas: number) : boolean {
         
         let retornoValidacaoAmortizacao = validarValorAmortizacaoPrevia(
@@ -156,18 +173,20 @@ export default (props: any)=>{
       }
 
       async function handleGetSalvarParcelamento() {
-        if(validarCriterios(values.valorAmortizacao, values.quantidadePacelas)){
-          montarParcelamentoSalvar(props)
-          await salvarSolicitacaoParcelamento(amortizacao)
-          .then((response) => {
-            exibirMensagemSucesso(Info.PARCELAMENTO_CADASTRO_SUCESSO)
-            setExibirMensagem(Sucess.PARCELAMENTO_SALVO_SUCESSO)
-
-          }).catch((error) => {
-            console.log(error);
-          })
-        }else{
-          setValidationMessageOpen(true);
+        if(validate()){
+          if(validarCriterios(values.valorAmortizacao, values.quantidadePacelas)){
+            montarParcelamentoSalvar(props)
+            await salvarSolicitacaoParcelamento(amortizacao)
+            .then((response) => {
+              exibirMensagemSucesso(Info.PARCELAMENTO_CADASTRO_SUCESSO)
+              setExibirMensagem(Sucess.PARCELAMENTO_SALVO_SUCESSO)
+  
+            }).catch((error) => {
+              console.log(error);
+            })
+          }else{
+            setValidationMessageOpen(true);
+          }
         }
 
       }
@@ -198,7 +217,6 @@ export default (props: any)=>{
 
         try {
           const retorno = await detalharOperacaoCliente(props.match.params.operacaoCliente)
-          console.log(retorno)
           setDoc(retorno.cliente.documento);
           setNomeClie(retorno.cliente.nomeCliente)
           setOperacao(retorno.operacaoCliente)
@@ -249,6 +267,8 @@ export default (props: any)=>{
           <Container>
             <Page pagetitle="Solicitação de Parcelamento" history={props.history}>
 
+
+            <form >
               <Fieldset subtitle="Dados de Identificação do Cliente/Operação"> 
 
                   <Row>
@@ -307,7 +327,7 @@ export default (props: any)=>{
                           />
                     </Grid>
                   </Row>
-                </Fieldset>            
+              </Fieldset>            
 
               <Fieldset subtitle="Parâmetros de Referencia da Operação">
 
@@ -377,27 +397,40 @@ export default (props: any)=>{
                   <Col sm={6}>
                     <TextField id="amortizacaoPrevia" label="Amortização Prévia"
                       value={values.valorAmortizacao}
+                      placeholder="Preencher..."
+                      autoFocus
                       onChange={handleChange('valorAmortizacao')}
+                      error={errors.valorAmortizacao? true: false}
+                      helperText={errors.valorAmortizacao}
                       variant="outlined" fullWidth required />
                   </Col>
 
                   <Col sm={6}>
-                    <TextField id="saldoDevedor" disabled label="Saldo Devedor" value={values.saldoDevedor}
+                    <TextField id="saldoDevedor" 
+                      disabled 
+                      label="Saldo Devedor" 
+                      value={values.saldoDevedor}
                       onChange={handleChange('saldoDevedor')}
-                      variant="outlined" fullWidth required />
+                      variant="outlined" fullWidth />
                   </Col>
                 </Row> 
 
                   <Row>              
                   <Col sm={6}>
-                    <TextField id="quantidadeParcelas" label="Quantidade de Parcelas" value={values.quantidadePacelas}
+                    <TextField id="quantidadeParcelas" label="Quantidade de Parcelas" 
+                      value={values.quantidadePacelas}
+                      placeholder="Preencher..."
                       onChange={handleChange('quantidadePacelas')}
+                      error={errors.quantidadePacelas? true: false}
+                      helperText={errors.quantidadePacelas}
                       variant="outlined" fullWidth required />
                   </Col>
                 </Row>          
 
 
               </Fieldset>
+
+              </form>
 
               <Dialog
                       fullScreen={props.fullScreen}
