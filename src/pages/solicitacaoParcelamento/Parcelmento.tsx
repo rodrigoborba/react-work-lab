@@ -31,9 +31,9 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 
-
 import { validarParcelas, validarValorAmortizacaoPrevia } from '../../services/ParcelamentoService'
 
+const theme = require('./style.css');
 
 export interface StateParcelamento {
     sistemas: [string, string];
@@ -269,7 +269,8 @@ export default (props: any)=>{
 
 
             <form >
-              <Fieldset subtitle="Dados de Identificação do Cliente/Operação"> 
+              <Fieldset subtitle="Dados de Identificação do Cliente/operação" 
+                theme={theme}> 
 
                   <Row>
                     <Grid item xs={12} md={12} lg={12}>
@@ -329,7 +330,7 @@ export default (props: any)=>{
                   </Row>
               </Fieldset>            
 
-              <Fieldset subtitle="Parâmetros de Referencia da Operação">
+              <Fieldset subtitle="Parâmetros de Referência da Operação">
 
                 <Row>
                   <Grid item xs={6} md={6} lg={6}>
@@ -390,7 +391,7 @@ export default (props: any)=>{
               </Fieldset>
 
 
-              <Fieldset subtitle="Valores Negociados com o cliente">
+              <Fieldset subtitle="Valores Negociados com o Cliente">
 
                       
                 <Row>

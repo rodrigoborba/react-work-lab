@@ -1,7 +1,22 @@
-.customFieldSetSubtitle {
-    text-transform: capitalize !important;
+
+.makeStyles-subtitle-48 {
+    color: #dc2754;
+    font-weight: bolder;
+    text-transform: initial;
+    font-size: large;
 }
 
-.border1 {
-    border: 1 !important;
+.makeStyles-subtitle-125 {
+    color: #dc2754;
+    font-weight: bolder;
+    text-transform: initial;
+    font-size: large;
+}
+
+.makeStyles-title2-123 {
+    font-weight: 600;
+}
+
+.makeStyles-title2-46 {
+    font-weight: 600;
 }
