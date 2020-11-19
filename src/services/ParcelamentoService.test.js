@@ -1,5 +1,5 @@
 
-import { validarParcelas, validarValorAmortizacaoPrevia } from './ParcelamentoService'
+import { validarParcelas, validarValorAmortizacaoPrevia, retornarSaldoDevedor } from './ParcelamentoService'
 
 describe('Testes historia incluir Parcelamento - ParcelamentoService', () =>{
 
@@ -17,6 +17,17 @@ describe('Testes historia incluir Parcelamento - ParcelamentoService', () =>{
 
         expect(validarParcelas(5)).toMatchObject(retornoValido);
     });
+
+    test('Teste inserir número de parcelas valido (com type string) ', () => {
+
+        expect(validarParcelas("5")).toMatchObject(retornoValido);
+    });
+
+    test('Teste inserir número de parcelas inválido (número negativo) ', () => {
+
+        expect(validarParcelas(-1)).toMatchObject(retornoInvalido);
+    });
+    
 
     test('Teste inserir número de parcelas inválido (número igual a zero) ', () => {
 
@@ -40,9 +51,18 @@ describe('Testes historia incluir Parcelamento - ParcelamentoService', () =>{
 
     test('Teste inserir valor amortização válido ', () => {
 
-        expect(validarValorAmortizacaoPrevia(3000, 300, 100, 5000)).toMatchObject(retornoValido);
+        expect(validarValorAmortizacaoPrevia(3000, 300, 100, 6000)).toMatchObject(retornoValido);
     });
 
+    test('Teste calculo saldo devedor com amortização válida', () => {
+
+        expect(retornarSaldoDevedor(3000)).toBe(10000);
+    });
+
+    test('Teste calculo saldo devedor com amortização nula ', () => {
+
+        expect(retornarSaldoDevedor(undefined)).toBe(0);
+    });
 
 })
 

@@ -1,7 +1,6 @@
 import React, {useState, useEffect } from "react";
 import { Container, Snack, Buttons, Row, Page } from 'bnb-ui/dist'
-import MUIDataTable from 'mui-datatables';
-import { Grid, TextField, Box  } from '@material-ui/core';
+import { Grid, TextField } from '@material-ui/core';
 
 import { detalharOperacaoCliente, salvarSolicitacaoParcelamento } from '../../providers/ParcelamentoProvider'
 import AmortizacaoPreviaTO from '../../models/AmortizacaoPreviaTO'
@@ -12,7 +11,6 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
 import { Fieldset } from 'bnb-ui/dist';
 import { Col } from 'bnb-ui/dist';
@@ -31,39 +29,39 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 
-import { validarParcelas, validarValorAmortizacaoPrevia } from '../../services/ParcelamentoService'
+import { validarParcelas, validarValorAmortizacaoPrevia, retornarSaldoDevedor } from '../../services/ParcelamentoService'
 
 const theme = require('./style.css');
 
 export interface StateParcelamento {
-    sistemas: [string, string];
-    id: any;
-    nome: string;
-    documento: string;
-    nomeEmpresa: string;
-    contato: string;
-    operacaoCliente: string;
-    open: boolean;
-    saldoDevedor:number,
-    valorAmortizacao: any,
-    saldoDevedorMinimo:number,
-    saldoDevedorMaximo:number,
-    valorMinimoAmortizacao: number;
-    valorMaximoAmortizacao: number;
-    valorTarifaMinima: number;
-    valorTarifaMaxima: number;
-    valorNegociado: number;
-    quantidadePacelas: any;
-    messageErro: string;
-    message: string;
-    variant: any;
-    objSnack: [string, string];
-    keycloak?: any;
-    authenticated?: any;
-    retorno?: any;
-    openSnack?:  any;
+  sistemas: [string, string];
+  id: any;
+  nome: string;
+  documento: string;
+  nomeEmpresa: string;
+  contato: string;
+  operacaoCliente: string;
+  open: boolean;
+  saldoDevedor:number,
+  valorAmortizacao: any,
+  saldoDevedorMinimo:number,
+  saldoDevedorMaximo:number,
+  valorMinimoAmortizacao: number;
+  valorMaximoAmortizacao: number;
+  valorTarifaMinima: number;
+  valorTarifaMaxima: number;
+  valorNegociado: number;
+  quantidadePacelas: any;
+  messageErro: string;
+  message: string;
+  variant: any;
+  objSnack: [string, string];
+  keycloak?: any;
+  authenticated?: any;
+  retorno?: any;
+  openSnack?:  any;
 
-  }
+}
 
 
 export default (props: any)=>{
@@ -106,7 +104,7 @@ export default (props: any)=>{
       });
 
       useEffect(() => {
-       handleGet()
+        handleGet()
 
       },[]);
 
@@ -204,7 +202,7 @@ export default (props: any)=>{
         amortizacao.nomeCliente = nomeClie;
         amortizacao.nomeEmpresa = nomeEmpresa;
         amortizacao.valorMaximoAmortizacao = amortizacaoMaxima;
-        amortizacao.valorMinimoAmortizacao = amortizacaoMinima
+        amortizacao.valorMinimoAmortizacao = amortizacaoMinima;
         amortizacao.valorTarifaMinima = tarifaMinima;
         amortizacao.valorTarifaMaxima = tarifaMaxima;
         amortizacao.qtdeParcela = values.quantidadePacelas;
@@ -241,10 +239,18 @@ export default (props: any)=>{
       }
 
       const handleChange = (name: keyof StateParcelamento) => (event: React.ChangeEvent<HTMLInputElement>) => {
-        setValues({
+        if(name == 'valorAmortizacao'){
+          setValues({
+            ...values,
+            saldoDevedor: retornarSaldoDevedor(event.target.value),
+            [name]: event.target.value,
+          });
+        }else{
+          setValues({
                   ...values,
                   [name]: event.target.value,
           });
+        }  
       };
 
       function createRow(descricao: string, valor: string) {
@@ -323,7 +329,6 @@ export default (props: any)=>{
                         disabled
                         value={contatos}
                         variant="outlined"
-
                         fullWidth
                           />
                     </Grid>
@@ -392,7 +397,6 @@ export default (props: any)=>{
 
 
               <Fieldset subtitle="Valores Negociados com o Cliente">
-
                       
                 <Row>
                   <Col sm={6}>
@@ -410,8 +414,7 @@ export default (props: any)=>{
                     <TextField id="saldoDevedor" 
                       disabled 
                       label="Saldo Devedor" 
-                      value={values.saldoDevedor}
-                      onChange={handleChange('saldoDevedor')}
+                      value={FormatValorMoedaReal(values.saldoDevedor)}
                       variant="outlined" fullWidth />
                   </Col>
                 </Row> 

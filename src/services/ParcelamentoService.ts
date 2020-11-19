@@ -6,12 +6,28 @@ export function validarParcelas(value: number): RetornoValidacao {
         valido: true,
         mensagem: ''
     };
+    if(value == undefined){
+      retornoValidacao.valido = false;
+      return retornoValidacao;
+    }
+    let parcela:number;
+    try {
+      parcela = +value;
+    } catch {
+      retornoValidacao.valido = false;
+      return retornoValidacao;
+    }
 
-    if(value === 0){
+    if(parcela < 0){
+      retornoValidacao.mensagem = 'Quantidade de parcelas inválida.';
+      retornoValidacao.valido = false;
+    }
+    
+    if(parcela === 0){
       retornoValidacao.mensagem = 'A quantidade de parcelas não pode ser igual a zero.';
       retornoValidacao.valido = false;
     }
-    if(value > 6){
+    if(parcela > 6){
       retornoValidacao.mensagem = 'A quantidade de parcelas não pode ser superior a 6 (seis).';
       retornoValidacao.valido = false;
     }
@@ -40,4 +56,13 @@ export function validarValorAmortizacaoPrevia(
       retornoValidacao.valido = false;
     }
     return retornoValidacao;
+}
+
+export function retornarSaldoDevedor(valorAmortizacao: any) {
+  let saldoDevedor = 0;
+  if(valorAmortizacao == undefined){
+    return 0;
+  }
+  saldoDevedor = valorAmortizacao * 100 / 30;  
+  return saldoDevedor;
 }
