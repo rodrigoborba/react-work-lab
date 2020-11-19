@@ -17,8 +17,8 @@ import { Col } from 'bnb-ui/dist';
 import { FormatValorMoedaReal } from '../../utils/Mascaras'
 import Info from '../../constants/info';
 import Sucess from '../../constants/sucess'
-import Message from '../../message'
-import DialogSimNao from '../../dialog'
+import Message from '../../Components/mensagens/message'
+import DialogSimNao from '../../Components/mensagens/dialog'
 
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
