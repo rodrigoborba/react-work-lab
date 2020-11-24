@@ -1,11 +1,21 @@
 import React, {useState, useEffect } from "react";
-import { Container, Snack, Buttons, Row, Page } from 'bnb-ui/dist'
-import MUIDataTable from 'mui-datatables';
-import { IconButton, Tooltip, Grid, TextField} from '@material-ui/core';
 
+import { Container, Snack, Buttons, Row, Page, Load } from 'bnb-ui/dist'
+
+import { IconButton, Tooltip, Grid, TextField} from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/SearchOutlined'
 import GetAppIcon from '@material-ui/icons/GetApp'
 import PublishIcon from '@material-ui/icons/Publish';
+import Button from '@material-ui/core/Button';
+
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+
+import MUIDataTable from 'mui-datatables';
+
+import { Link } from 'react-router-dom';
 
 import { consultarOperacoesCarteiraFiltro } from '../../providers/OperacoesProvider'
 import OperacaoTO from '../../models/OperacaoTO' 
@@ -13,22 +23,10 @@ import { init } from '../../Components/seguranca/Auth'
 import { textMaskCPF, textMaskCNPJ, removerMascaraDocumento, formatarDocumento, textMaskOperacao } from '../../utils/Mascaras';
 import { validarCnpj, validarCpf } from '../../utils/ValidacaoUtils'
 
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Button from '@material-ui/core/Button';
-import { Link } from 'react-router-dom';
-
-
-
 
 import './style.css'
 
 export interface StateListarOperacoes {
-  sistemas: [string, string];
-  id: any;
   operacaoCliente: string;
   documento: string;
   nome: string;
@@ -48,8 +46,6 @@ export interface StateListarOperacoes {
 export default function ListarOperacoes(props: any) {
 
   const [values, setValues] = React.useState<StateListarOperacoes>({
-    sistemas: ['', ''],
-    id: '',
     operacaoCliente: '',
     documento: '',
     nome: '',
@@ -66,6 +62,12 @@ export default function ListarOperacoes(props: any) {
     openSnack: false,
   });
 
+  const [doc, setDoc] = useState('');
+  const [data, setData] = useState<OperacaoTO[]>([])
+
+  const [open, setOpen] = useState(false);
+  const [exibirLoad, setExibirLoad] = useState(false);
+
   const handleChange = (name: keyof StateListarOperacoes) => (event: React.ChangeEvent<HTMLInputElement>) => {
     setValues({
               ...values,
@@ -73,15 +75,9 @@ export default function ListarOperacoes(props: any) {
       });
   };
 
-  const [doc, setDoc] = useState('');
-
   const handleChangeDoc = (e: any) => {
     setDoc(e.currentTarget.value);
   };
-
-  const [data, setData] = useState<OperacaoTO[]>([])
-
-  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     init('login-required', 'implicit' )
@@ -103,6 +99,7 @@ export default function ListarOperacoes(props: any) {
 
   async function handleGet() {
       if(validarDocumento()){
+        setExibirLoad(true)
         try {
           await consultarOperacoesCarteiraFiltro(values.operacaoCliente, doc, values.nome)
             .then((response) => {
@@ -129,9 +126,11 @@ export default function ListarOperacoes(props: any) {
                 );
               }
               setData(data)
+              setExibirLoad(false)
             })
           
         } catch (error) {
+            setExibirLoad(false)
             console.log(error);
             setData([])
         }   
@@ -161,8 +160,8 @@ export default function ListarOperacoes(props: any) {
           return (
               <div>
                   <Link to={'/solicitacaoParcelamento/Parcelamento/' + value}>         
-           {value}
-                </Link>
+                    {value}
+                  </Link>
                    
               </div>
           );
@@ -254,6 +253,7 @@ export default function ListarOperacoes(props: any) {
     
   return (
     <Container>
+      <div className="divLoading" style={{display: exibirLoad ? 'block': 'none'}}> <Load /> </div>
       <Page pagetitle="Listar Operações" history={props.history}>
 
           <Row>

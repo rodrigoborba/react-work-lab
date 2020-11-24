@@ -1,13 +1,7 @@
 import * as React from "react";
 import axios from 'axios';
-import { useState } from 'react';
-import {Container, Page, Fieldset, ButtonGroup} from 'bnb-ui/dist';
+import {Container, Page, Fieldset, ButtonGroup, Snack} from 'bnb-ui/dist';
 import { TextField, Button } from '@material-ui/core';
-import {Snack} from 'bnb-ui/dist';import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
 
 export interface PropsEditFields {
   history?: any;

@@ -8,7 +8,7 @@ import AccountCircle from '@material-ui/icons/AccountCircleOutlined';
 import NotificationsIcon from '@material-ui/icons/NotificationsOutlined';
 import MailIcon from '@material-ui/icons/MailOutline';
 import MoreIcon from '@material-ui/icons/MoreVertOutlined';
-import { makeStyles, useTheme, Theme, createStyles } from '@material-ui/core/styles';
+import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
 
 const drawerWidth = 240;
 
@@ -52,9 +52,7 @@ interface userProps {
 }
 
 export default function User(props: userProps) {
-    const { container } = props;
     const classes = useStyles();
-    const theme = useTheme();
 
     const [mobileOpen, setMobileOpen] = React.useState(false);
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -117,10 +115,6 @@ export default function User(props: userProps) {
             </MenuItem>
         </Menu>
     );
-
-    function handleDrawerToggle() {
-        setMobileOpen(!mobileOpen);
-    }
 
     function handleProfileMenuOpen(event: React.MouseEvent<HTMLElement>) {
         setAnchorEl(event.currentTarget);

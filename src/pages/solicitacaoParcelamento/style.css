@@ -1,0 +1,31 @@
+
+.makeStyles-subtitle-48 {
+    color: #a6193c;
+    font-weight: bolder;
+    text-transform: initial;
+    font-size: large;
+}
+
+.makeStyles-subtitle-125 {
+    color: #a6193c;
+    font-weight: bolder;
+    text-transform: initial;
+    font-size: large;
+}
+
+.makeStyles-title2-123 {
+    font-weight: 600;
+}
+
+.makeStyles-title2-46 {
+    font-weight: 600;
+}
+
+.divLoading {
+    height: auto;
+}
+  
+.divLoading > div > div {
+    margin: 0;
+    margin-top: 200px;
+}

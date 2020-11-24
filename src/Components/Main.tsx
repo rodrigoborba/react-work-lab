@@ -1,16 +1,16 @@
-import * as React from "react";
+import React, {Suspense, lazy } from "react";
 import { Switch, Route, withRouter } from "react-router-dom";
-import { Suspense, lazy} from 'react';
+
+import { Load } from "bnb-ui/dist";
 
 import Home from './Home';
 import ListarOperacoes from '../pages/listar-operacoes/ListarOperacoes';
-import { Load } from "bnb-ui/dist";
-//import Parcelamento from  '../pages/solicitacaoParcelamento/Parcelamento'
+
 const renderLoader = () => {
     return <Load></Load>
 };
 
-const Parcelamento = lazy(() => import('../pages/solicitacaoParcelamento/Parcelmento'));
+const Parcelamento = lazy(() => import('../pages/solicitacaoParcelamento/Parcelamento'));
 
 const Main = () => (
     <Suspense fallback={renderLoader()}>

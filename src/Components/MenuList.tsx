@@ -1,7 +1,9 @@
 import * as React from "react";
+
 import List from '@material-ui/core/List';
-import { MenuItem } from 'bnb-ui/dist';
 import HomeOutlined from '@material-ui/icons/HomeOutlined'
+
+import { MenuItem } from 'bnb-ui/dist';
 
 const MenuList = () =>
     <List component="nav">
