@@ -2,7 +2,7 @@ import React from 'react';
 import InputBase from '@material-ui/core/InputBase';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import SearchIcon from '@material-ui/icons/Search';
-import { makeStyles, useTheme, Theme, createStyles } from '@material-ui/core/styles';
+import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -80,7 +80,6 @@ interface searchProps {
 
 export default function Search(props: searchProps) {
     const classes = useStyles();
-    const theme = useTheme();
 
   return (
     <div className={classes.root}>

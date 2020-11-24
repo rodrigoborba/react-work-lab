@@ -1,5 +1,5 @@
 
-import { formatarDocumento, removerMascaraDocumento } from './Mascaras'
+import { formatarDocumento, removerMascaraDocumento, formatarValorMoedaReal } from './Mascaras'
 
 describe('Testes componente utilitario de mascaras ', () =>{
 
@@ -17,6 +17,22 @@ describe('Testes componente utilitario de mascaras ', () =>{
 
     test('Remover mascara CNPJ', () => {
         expect(removerMascaraDocumento('12.855.644.0001/40')).toBe('12855644000140');
+    });
+
+    test('Formatar valor redondo em real', () => {
+        expect(formatarValorMoedaReal(500)).toContain('500.00');
+    });
+
+    test('Formatar valor com centavos em real', () => {
+        expect(formatarValorMoedaReal(500.57)).toContain('500.57');
+    });
+
+    test('Formatar valor acima de mil com centavos em real', () => {
+        expect(formatarValorMoedaReal(1500.57)).toContain('1,500.57');
+    });
+
+    test('Formatar valor nulo em real', () => {
+        expect(formatarValorMoedaReal(null)).toBe('');
     });
 
 })

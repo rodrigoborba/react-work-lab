@@ -1,5 +1,6 @@
 import React from "react";
 import MaskedInput from 'react-text-mask';
+import NumberFormat from 'react-number-format'
 
 interface TextMaskCustomProps {
   inputRef: (ref: HTMLInputElement | null) => void;
@@ -99,13 +100,49 @@ export function formatarDocumento(value: string) {
 }
 
 
-export function FormatValorMoedaReal (valor: number): string {
+export function formatarValorMoedaReal (valor: number): string {
+        if(undefined == valor){
+                return "";       
+        }
         if (valor < 0) {
-          return `(${Math.abs(valor).toLocaleString('pt-br', { style: 'currency', currency: 'BRL' })})`
+                return `(${Math.abs(valor).toLocaleString('pt-br', { style: 'currency', currency: 'BRL' })})`
         }
         return `${valor.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' })}`
 }
 
+export function removerMascaraMonetaria(valor: any) {
+    
+        if(undefined == valor){
+                return undefined;       
+        }
+        
+        valor = valor.replace(/[^0-9,]+/g, '');
+        valor = valor.replace(/[,]+/g, '.');
+        return Number(valor);
+}
+
+export function mascaraMonetaria(valor: string) {
+    
+        if(undefined == valor){
+                return undefined;       
+        }
+
+        if(valor.slice(-1) == ',' || valor.slice(-1) == '.'){
+                return valor;        
+        }
+        
+        valor = valor.replace(/[^0-9,]+/g, '');
+        valor = valor.replace(/[,]+/g, '.');
+        let valorExtraido = Number(valor);
+        let valorFormatado = undefined;
+        try {
+                valorFormatado = `${Math.abs(valorExtraido).toLocaleString('pt-br', { style: 'currency', currency: 'BRL' })}`        
+        } catch (error) {
+                return valor;
+        }
+        return valorFormatado; 
+}
+    
 
 
 

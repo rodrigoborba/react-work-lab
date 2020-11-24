@@ -10,44 +10,42 @@ function isRepeatingNumber(valor: string){
 }
 
 export function validarCpf (input: string){
-    if(null!= input){
+    if(null== input){
+      return false;
+    }
+    const cpf = input.replace(/\D/g, '');
 
-        const cpf = input.replace(/\D/g, '');
+    if (
+        cpf === '' ||
+        cpf.length !== 11 ||
+        !/^\d{11}$/.test(cpf) ||
+        isRepeatingNumber(cpf)
+    ) {
+        return false;
+    }
 
-        if (
-            cpf === '' ||
-            cpf.length !== 11 ||
-            !/^\d{11}$/.test(cpf) ||
-            isRepeatingNumber(cpf)
-        ) {
+    const digitos = cpf.split('').map(x => parseInt(x));
+
+    for (let j = 0; j < 2; j++) {
+        let sum = 0;
+
+        for (let i = 0; i < 9 + j; i++) {
+            sum += digitos[i] * (10 + j - i);
+        }
+
+        let checkDigit = 11 - (sum % 11);
+
+        if (checkDigit === 10 || checkDigit === 11) {
+            checkDigit = 0;
+        }
+
+        if (checkDigit !== digitos[9 + j]) {
             return false;
         }
-
-        const digitos = cpf.split('').map(x => parseInt(x));
-
-        for (let j = 0; j < 2; j++) {
-            let sum = 0;
-
-            for (let i = 0; i < 9 + j; i++) {
-                sum += digitos[i] * (10 + j - i);
-            }
-
-            let checkDigit = 11 - (sum % 11);
-
-            if (checkDigit === 10 || checkDigit === 11) {
-                checkDigit = 0;
-            }
-
-            if (checkDigit !== digitos[9 + j]) {
-                return false;
-            }
-        }
-
-        return true;
     }
-    return false;
-	
-};
+
+    return true;
+}
 
 function isRepeatingNumberCNPJ(valor: string){
   return /^(\d)(\1){14}$/.test(valor);

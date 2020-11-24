@@ -1,12 +1,11 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Buttons } from 'bnb-ui/dist';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import { useState } from 'react';
 import Button from '@material-ui/core/Button';
 
 export interface PropsOut {
@@ -18,7 +17,7 @@ export interface PropsOut {
 function handleOut(){
     localStorage.setItem('authenricated', "");
     localStorage.setItem('keycloak', "");
-    window.location.href='http://s2ssod02.dreads.bnb:8443/auth/realms/Desenv/protocol/openid-connect/logout?redirect_uri=' + process.env.REACT_APP_NGINX_ENDPOINT;
+    window.location.href= process.env.REACT_APP_LOGOUT_URL + '' + process.env.REACT_APP_NGINX_ENDPOINT;
 } 
 
 export default function Out(props: PropsOut) {

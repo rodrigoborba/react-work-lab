@@ -1,6 +1,8 @@
 
 import { RetornoValidacao } from '../utils/ValidacaoUtils'
 
+import { removerMascaraMonetaria } from '../utils/Mascaras'
+
 export function validarParcelas(value: number): RetornoValidacao {
     let retornoValidacao = {
         valido: true,
@@ -47,6 +49,9 @@ export function validarValorAmortizacaoPrevia(
         mensagem: ''
     };
 
+    let valorParaCalculo:number = removerMascaraMonetaria(value.toString())!;
+    value = valorParaCalculo;
+
     if(value < amortizacaoMinima + tarifaMinima){
       retornoValidacao.mensagem = 'O valor informado para a amortização prévia é inferior a 35% do valor do saldo devedor atualizado por encargos contratuais.';
       retornoValidacao.valido = false;
@@ -60,7 +65,7 @@ export function validarValorAmortizacaoPrevia(
 
 export function retornarSaldoDevedor(valorAmortizacao: any) {
   let saldoDevedor = 0;
-  if(valorAmortizacao == undefined){
+  if(valorAmortizacao == undefined || valorAmortizacao == 0){
     return 0;
   }
   saldoDevedor = valorAmortizacao * 100 / 30;  

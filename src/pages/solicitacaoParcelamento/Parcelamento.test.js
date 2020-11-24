@@ -1,6 +1,6 @@
 
 import React from "react";
-import Parcelamento from './Parcelmento'
+import Parcelamento from './Parcelamento'
 import Enzyme, { shallow } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 

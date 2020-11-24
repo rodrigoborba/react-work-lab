@@ -1,25 +1,16 @@
 import React, {useState, useEffect } from "react";
-import { Container, Snack, Buttons, Row, Page } from 'bnb-ui/dist'
+
+import { Container, Snack, Buttons, Row, Page, Load, Fieldset, Col } from 'bnb-ui/dist'
+
 import { Grid, TextField } from '@material-ui/core';
 
-import { detalharOperacaoCliente, salvarSolicitacaoParcelamento } from '../../providers/ParcelamentoProvider'
-import AmortizacaoPreviaTO from '../../models/AmortizacaoPreviaTO'
-import { init } from '../../Components/seguranca/Auth'
-import { formatarDocumento, textMaskOperacao } from '../../utils/Mascaras';
+import { createBrowserHistory } from 'history';
 
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import Button from '@material-ui/core/Button';
-import { Fieldset } from 'bnb-ui/dist';
-import { Col } from 'bnb-ui/dist';
-import { FormatValorMoedaReal } from '../../utils/Mascaras'
-import Info from '../../constants/info';
-import Sucess from '../../constants/sucess'
-import Message from '../../Components/mensagens/message'
-import DialogSimNao from '../../Components/mensagens/dialog'
-
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -29,13 +20,19 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 
+import Info from '../../constants/info';
+import Sucess from '../../constants/sucess'
+import Message from '../../Components/mensagens/message'
+import DialogSimNao from '../../Components/mensagens/dialog'
+
+import { detalharOperacaoCliente, salvarSolicitacaoParcelamento } from '../../providers/ParcelamentoProvider'
+import AmortizacaoPreviaTO from '../../models/AmortizacaoPreviaTO'
+import { formatarDocumento, textMaskOperacao, formatarValorMoedaReal, mascaraMonetaria, removerMascaraMonetaria } from '../../utils/Mascaras';
 import { validarParcelas, validarValorAmortizacaoPrevia, retornarSaldoDevedor } from '../../services/ParcelamentoService'
 
 const theme = require('./style.css');
 
 export interface StateParcelamento {
-  sistemas: [string, string];
-  id: any;
   nome: string;
   documento: string;
   nomeEmpresa: string;
@@ -73,9 +70,9 @@ export default (props: any)=>{
 
     const classes = useStyles();
 
+    const history = createBrowserHistory();
+
     const [values, setValues] = React.useState<StateParcelamento>({
-        sistemas: ['', ''],
-        id: '',
         nome: '',
         documento: '',
         nomeEmpresa: '',
@@ -120,18 +117,21 @@ export default (props: any)=>{
       const [contatos, setContatos] = useState('');
       const [nomeEmpresa, setNomeEmpresa] = useState('');
       const [quantidadeParcelas, setQuantidadeParcelas] = useState(0);
+      const [amortizacao, setAmortizacao] = useState<AmortizacaoPreviaTO>(new AmortizacaoPreviaTO())
+
       const [exibirMensagem, setExibirMensagem] = useState('')
       const [exibirModalSucesso, setExibirModalSucesso] = useState(false)
+      const [exibirMensagemInfo, setExibirMensagemInfo] = useState('')
+      const [exibirModalInfo, setExibirModalInfo] = useState(false)
       const [dialogSimNao, setDialogSimNao] = useState(false)
       const [dialogSimNaoMensagem, setDialogSimNaoMensagem] = useState('')
 
-      const [amortizacao, setAmortizacao] = useState<AmortizacaoPreviaTO>(new AmortizacaoPreviaTO())
-
       const [errorMessage, setErrorMessage] = useState('');
-
       const [validationMessageOpen, setValidationMessageOpen] = useState(false);
-
       const [errors, setErrors] = useState({ valorAmortizacao: '', quantidadePacelas: '' });
+
+      const [exibirLoad, setExibirLoad] = useState(true);
+
 
       const validate = (fieldValues = values) => {
           let temp = { valorAmortizacao: "", quantidadePacelas: "" }
@@ -146,8 +146,9 @@ export default (props: any)=>{
               ...temp
           })
 
-          if (fieldValues == values)
+          if (fieldValues == values){
               return Object.values(temp).every(item => item == "")
+          }
       }
 
       function validarCriterios(valorAmortizacao : number, quantidadeParcelas: number) : boolean {
@@ -170,17 +171,17 @@ export default (props: any)=>{
         return retornoValidacaoAmortizacao.valido &&  retornoValidacaoParcelas.valido;
       }
 
-      async function handleGetSalvarParcelamento() {
+      async function handleSalvarParcelamento() {
         if(validate()){
           if(validarCriterios(values.valorAmortizacao, values.quantidadePacelas)){
             montarParcelamentoSalvar(props)
             await salvarSolicitacaoParcelamento(amortizacao)
             .then((response) => {
-              exibirMensagemSucesso(Info.PARCELAMENTO_CADASTRO_SUCESSO)
               setExibirMensagem(Sucess.PARCELAMENTO_SALVO_SUCESSO)
-  
+              setExibirModalSucesso(true)
+
             }).catch((error) => {
-              console.log(error);
+              tratarErro(error);
             })
           }else{
             setValidationMessageOpen(true);
@@ -189,9 +190,62 @@ export default (props: any)=>{
 
       }
 
-      function exibirMensagemSucesso (mensagem: string) {
-        setExibirMensagem(mensagem)
-        setExibirModalSucesso(true)
+      async function handleGet() {
+
+        try {
+          const retorno = await detalharOperacaoCliente(props.match.params.operacaoCliente)
+          setDoc(retorno.cliente.documento);
+          setNomeClie(retorno.cliente.nomeCliente)
+          setOperacao(retorno.operacaoCliente)
+          setTarifaMinima(retorno.tarifaMinima ? retorno.tarifaMinima: 0)
+
+          setTarifaMaxima(retorno.tarifaMaxima ? retorno.tarifaMaxima: 0)
+          setSaldoMaximo(retorno.saldoDevedorMaximo ? retorno.saldoDevedorMaximo: 0)
+          setSaldoMinimo(retorno.saldoDevedorMinimo ? retorno.saldoDevedorMinimo: 0)
+          setAmortizacaoMinima(retorno.amortizacaoMinima ? retorno.amortizacaoMinima: 0)
+          setAmortizacaoMaxima(retorno.amortizacaoMaxima ? retorno.amortizacaoMaxima: 0)
+          setContatos(retorno.cliente.contatos)
+          setNomeEmpresa(retorno.nomeEmpresa)
+          setExibirLoad(false)
+
+        } catch (error) {
+            setExibirLoad(false)
+            tratarErro(error)
+        }
+      }
+
+      const handleChange = (name: keyof StateParcelamento) => (event: React.ChangeEvent<HTMLInputElement>) => {
+          setValues({
+                  ...values,
+                  [name]: event.target.value,
+          });
+      };
+
+      const handleBlurAmortizacao = (event: any) => (event: React.FocusEvent<HTMLInputElement>) => {
+        let valorFormatado = mascaraMonetaria(event.target.value);
+        let valorParaCalculoSaldoDevedor:string = valorFormatado!; 
+        setValues({
+          ...values,
+          saldoDevedor: retornarSaldoDevedor(removerMascaraMonetaria(valorParaCalculoSaldoDevedor)),
+          valorAmortizacao: valorFormatado,
+        });
+      };
+
+      function limpar(value: string){
+        setDialogSimNao(false)
+        setValues({
+          ...values,
+          quantidadePacelas: undefined,
+          valorAmortizacao: undefined,
+        });
+        if(value === 'retornar'){
+          handleGoBack();
+        }
+      }
+
+      function handleGoBack(){
+        console.log(history)
+        history.goBack()
       }
 
       function montarParcelamentoSalvar (response: any) {
@@ -206,31 +260,15 @@ export default (props: any)=>{
         amortizacao.valorTarifaMinima = tarifaMinima;
         amortizacao.valorTarifaMaxima = tarifaMaxima;
         amortizacao.qtdeParcela = values.quantidadePacelas;
-        amortizacao.valorNegociadoAmortizacao = values.valorAmortizacao;
+        let valorParaCalculo:number = removerMascaraMonetaria(values.valorAmortizacao)!; 
+        amortizacao.valorNegociadoAmortizacao = valorParaCalculo;
         amortizacao.valorSaldoDevedor = values.saldoDevedor;
 
       }
 
-      async function handleGet() {
-
-        try {
-          const retorno = await detalharOperacaoCliente(props.match.params.operacaoCliente)
-          setDoc(retorno.cliente.documento);
-          setNomeClie(retorno.cliente.nomeCliente)
-          setOperacao(retorno.operacaoCliente)
-          setTarifaMinima(retorno.tarifaMinima ? retorno.tarifaMinima: 0)
-          setTarifaMaxima(retorno.tarifaMaxima ? retorno.tarifaMaxima: 0)
-          setSaldoMaximo(retorno.saldoDevedorMaximo ? retorno.saldoDevedorMaximo: 0)
-          setSaldoMinimo(retorno.saldoDevedorMinimo ? retorno.saldoDevedorMinimo: 0)
-          setAmortizacaoMinima(retorno.amortizacaoMinima ? retorno.amortizacaoMinima: 0)
-          setAmortizacaoMaxima(retorno.amortizacaoMaxima ? retorno.amortizacaoMaxima: 0)
-          setContatos(retorno.cliente.contatos)
-          setNomeEmpresa(retorno.nomeEmpresa)
-
-        } catch (error) {
-            console.log(error);
-
-        }
+      function tratarErro(error : any){
+        setExibirMensagemInfo(Info.ERRO_DESCONHECIDO)
+        setExibirModalInfo(true)
       }
 
       async function cancelarSolicitacaoParcelamento () {
@@ -238,39 +276,25 @@ export default (props: any)=>{
         setDialogSimNaoMensagem('Deseja cancelar?')
       }
 
-      const handleChange = (name: keyof StateParcelamento) => (event: React.ChangeEvent<HTMLInputElement>) => {
-        if(name == 'valorAmortizacao'){
-          setValues({
-            ...values,
-            saldoDevedor: retornarSaldoDevedor(event.target.value),
-            [name]: event.target.value,
-          });
-        }else{
-          setValues({
-                  ...values,
-                  [name]: event.target.value,
-          });
-        }  
-      };
-
       function createRow(descricao: string, valor: string) {
         return { descricao, valor};
       }
 
       const rowsMinimo = [
-        createRow('Saldo devedor', FormatValorMoedaReal(saldoMinimo)),
-        createRow('Amortização Prévia', FormatValorMoedaReal(amortizacaoMinima)),
-        createRow('Tarifa', FormatValorMoedaReal(tarifaMinima)),
+        createRow('Saldo devedor', formatarValorMoedaReal(saldoMinimo)),
+        createRow('Amortização Prévia', formatarValorMoedaReal(amortizacaoMinima)),
+        createRow('Tarifa', formatarValorMoedaReal(tarifaMinima)),
       ];
 
       const rowsMaximo = [
-        createRow('Saldo devedor', FormatValorMoedaReal(saldoMaximo)),
-        createRow('Amortização Prévia', FormatValorMoedaReal(amortizacaoMaxima)),
-        createRow('Tarifa', FormatValorMoedaReal(tarifaMaxima)),
+        createRow('Saldo devedor', formatarValorMoedaReal(saldoMaximo)),
+        createRow('Amortização Prévia', formatarValorMoedaReal(amortizacaoMaxima)),
+        createRow('Tarifa', formatarValorMoedaReal(tarifaMaxima)),
       ];
 
       return (
           <Container>
+            
             <Page pagetitle="Solicitação de Parcelamento" history={props.history}>
 
 
@@ -395,26 +419,28 @@ export default (props: any)=>{
 
               </Fieldset>
 
-
+              <div style={{display: exibirLoad ? 'block': 'none'}}> <Load /> </div>
               <Fieldset subtitle="Valores Negociados com o Cliente">
                       
                 <Row>
                   <Col sm={6}>
                     <TextField id="amortizacaoPrevia" label="Amortização Prévia"
-                      value={values.valorAmortizacao}
+                      value={values.valorAmortizacao || ''}
                       placeholder="Preencher..."
                       autoFocus
                       onChange={handleChange('valorAmortizacao')}
+                      onBlur={handleBlurAmortizacao(values.valorAmortizacao)}
                       error={errors.valorAmortizacao? true: false}
                       helperText={errors.valorAmortizacao}
-                      variant="outlined" fullWidth required />
+                      variant="outlined" fullWidth required 
+                      />
                   </Col>
 
                   <Col sm={6}>
                     <TextField id="saldoDevedor" 
                       disabled 
                       label="Saldo Devedor" 
-                      value={FormatValorMoedaReal(values.saldoDevedor)}
+                      value={formatarValorMoedaReal(values.saldoDevedor)}
                       variant="outlined" fullWidth />
                   </Col>
                 </Row> 
@@ -422,8 +448,9 @@ export default (props: any)=>{
                   <Row>              
                   <Col sm={6}>
                     <TextField id="quantidadeParcelas" label="Quantidade de Parcelas" 
-                      value={values.quantidadePacelas}
+                      value={values.quantidadePacelas || ''}
                       placeholder="Preencher..."
+                      type="number"
                       onChange={handleChange('quantidadePacelas')}
                       error={errors.quantidadePacelas? true: false}
                       helperText={errors.quantidadePacelas}
@@ -456,13 +483,19 @@ export default (props: any)=>{
 
                 <DialogActions>
                     <Buttons  variant="contained" color="primary" autoFocus onClick={()=> cancelarSolicitacaoParcelamento()} >Cancelar</Buttons>
-                    <Buttons variant="contained" color="primary" autoFocus onClick={()=> handleGetSalvarParcelamento()}>Submeter</Buttons>
+                    <Buttons variant="contained" color="primary" autoFocus onClick={()=> handleSalvarParcelamento()}>Submeter</Buttons>
                 </DialogActions>
 
 
               <Snack variant={values.variant} message={values.message} open={values.openSnack} ></Snack>
 
             </Page>
+
+          <Message
+            exibir={exibirModalInfo}
+            tipoErro
+            setExibir={setExibirModalInfo}
+            mensagem={exibirMensagemInfo} />  
 
           <Message
             exibir={exibirModalSucesso}
@@ -474,7 +507,7 @@ export default (props: any)=>{
             setExibir={setDialogSimNao}
             mensagem={dialogSimNaoMensagem}
             sim={() => {
-              setDialogSimNao(false)
+              limpar('')
             }}
             nao={() => {
               setDialogSimNao(false)
