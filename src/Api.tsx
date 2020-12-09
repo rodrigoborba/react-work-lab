@@ -1,9 +1,9 @@
 import axios, { AxiosRequestConfig } from 'axios'
-import { keycloak } from "../Components/seguranca/Auth";
+import { keycloak } from "./Auth";
 
 const api = axios.create({
   baseURL: process.env.REACT_APP_API_ENDPOINT,
-  timeout: 30000
+  timeout: 80000
 })
 
 const config = {

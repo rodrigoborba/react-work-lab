@@ -1,4 +1,3 @@
-
 import React from 'react';
 import IconButton from '@material-ui/core/IconButton';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -8,7 +7,7 @@ import AccountCircle from '@material-ui/icons/AccountCircleOutlined';
 import NotificationsIcon from '@material-ui/icons/NotificationsOutlined';
 import MailIcon from '@material-ui/icons/MailOutline';
 import MoreIcon from '@material-ui/icons/MoreVertOutlined';
-import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
+import { makeStyles, useTheme, Theme, createStyles } from '@material-ui/core/styles';
 
 const drawerWidth = 240;
 
@@ -41,7 +40,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 
-interface userProps {
+interface UserProps {
     container?: Element;
     children?: any;
     version?: string;
@@ -51,10 +50,9 @@ interface userProps {
     out?: any;
 }
 
-export default function User(props: userProps) {
+export default function User(props: UserProps) {
     const classes = useStyles();
 
-    const [mobileOpen, setMobileOpen] = React.useState(false);
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState<null | HTMLElement>(null);
     const isMenuOpen = Boolean(anchorEl);
@@ -175,5 +173,3 @@ export default function User(props: userProps) {
 
     );
 }
-
-

@@ -1,11 +1,15 @@
-import BaseApi from '../services/BaseApi'
-import { getLoggedUser } from '../Components/seguranca/Auth'
+import BaseApi from '../Api'
+
+import { getCNPJ, getLoggedUser } from '../Auth'
 import { removerMascaraDocumento } from '../utils/Mascaras'
 
 
 export async function consultarOperacoesCarteira(): Promise<any> {
-  let login = getLoggedUser();
-  const response = await BaseApi.get('/operacoes/carteira/' + login)
+  let cnpj = getCNPJ();
+  if(null === cnpj || '' === cnpj){
+    cnpj = getLoggedUser();
+  }
+  const response = await BaseApi.get('/operacoes/carteira/' + cnpj)
       .then((response) => {
         return response.data
       })
@@ -17,15 +21,17 @@ export async function consultarOperacoesCarteira(): Promise<any> {
 
 export async function consultarOperacoesCarteiraFiltro(operacao: string, documento: string, nome: string) {
   if (operacao || documento || nome) {
-    let login = getLoggedUser();
-
+    let cnpj = getCNPJ();
+    if(null === cnpj || '' === cnpj){
+      cnpj = getLoggedUser();
+    }
     documento = removerMascaraDocumento(documento);
     
     operacao = operacao.replace(/\s/g,"");
     operacao = operacao === "..." ? '': operacao;
 
     const response = await BaseApi.get(
-        '/operacoes/carteira/' + login + '/cliente/' + documento + '/' + nome + '/' + operacao)
+        '/operacoes/carteira/' + cnpj + '/cliente/' + documento + '/' + nome + '/' + operacao)
       .then((response) => {
         return response.data
       })

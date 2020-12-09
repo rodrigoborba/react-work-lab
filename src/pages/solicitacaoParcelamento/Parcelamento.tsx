@@ -2,7 +2,7 @@ import React, {useState, useEffect } from "react";
 
 import { Container, Snack, Buttons, Row, Page, Load, Fieldset, Col } from 'bnb-ui/dist'
 
-import { Grid, TextField } from '@material-ui/core';
+import { TextField } from '@material-ui/core';
 
 import { createBrowserHistory } from 'history';
 
@@ -146,8 +146,8 @@ export default (props: any)=>{
               ...temp
           })
 
-          if (fieldValues == values){
-              return Object.values(temp).every(item => item == "")
+          if (fieldValues === values){
+              return Object.values(temp).every(item => item === "")
           }
       }
 
@@ -303,7 +303,7 @@ export default (props: any)=>{
                 theme={theme}> 
 
                   <Row>
-                    <Grid item xs={12} md={12} lg={12}>
+                    <Col sm={12}>
                     <TextField
                         id="nome"
                         label="Nome do Cliente"
@@ -312,12 +312,12 @@ export default (props: any)=>{
                         variant="outlined"
                         fullWidth
                           />
-                    </Grid>
+                    </Col>
                   </Row>
 
                   <Row>
 
-                    <Grid item xs={12} md={6} lg={6}>
+                    <Col sm={6}>
                       <TextField
                         id="documento"
                         label="CPF/CNPJ"
@@ -329,8 +329,8 @@ export default (props: any)=>{
                         disabled
 
                         />
-                    </Grid>
-                    <Grid item xs={12} md={6} lg={6}>
+                    </Col>
+                    <Col sm={6}>
                       <TextField
                         id="operacao"
                         label="Operação"
@@ -342,11 +342,11 @@ export default (props: any)=>{
                           inputComponent: textMaskOperacao as any,
                         }}
                         />
-                    </Grid>
+                    </Col>
                   </Row>
 
                   <Row>
-                    <Grid item xs={12} md={12}>
+                    <Col sm={6}>
                       <TextField
                         id="telefone"
                         label="Telefone Cliente"
@@ -355,14 +355,14 @@ export default (props: any)=>{
                         variant="outlined"
                         fullWidth
                           />
-                    </Grid>
+                    </Col>
                   </Row>
               </Fieldset>            
 
               <Fieldset subtitle="Parâmetros de Referência da Operação">
 
                 <Row>
-                  <Grid item xs={6} md={6} lg={6}>
+                  <Col sm={6}>
 
                     <TableContainer component={Paper}>
                       <Table className={classes.table} aria-label="spanning table">
@@ -387,9 +387,9 @@ export default (props: any)=>{
                       </Table>
                     </TableContainer> 
 
-                    </Grid>        
+                    </Col>        
 
-                    <Grid item xs={6} md={6} lg={6}>
+                    <Col sm={6}>
 
                     <TableContainer component={Paper}>
                       <Table className={classes.table} aria-label="spanning table">
@@ -414,7 +414,7 @@ export default (props: any)=>{
                       </Table>
                     </TableContainer> 
 
-                    </Grid>    
+                    </Col>    
                 </Row>
 
               </Fieldset>

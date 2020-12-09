@@ -72,15 +72,18 @@ export function validarCnpj(value: string){
   if (isRepeatingNumberCNPJ(numbers.toString())) return false;
 
   // Cálculo validador
-  const calc = (x: number) => {
-    const slice = numbers.slice(0, x)
-    let factor = x - 7
+  const calc = (parametro: number) => {
+    const slice = numbers.slice(0, parametro)
+    let factor = parametro - 7
     let sum = 0
 
-    for (let i = x; i >= 1; i--) {
-      const n = slice[x - i]
-      sum += n * factor--
-      if (factor < 2) factor = 9
+    for (let indice = parametro; indice >= 1; indice--) {
+      const numeroPosicao = slice[parametro - indice]
+      let valorDrecementado = factor--
+      sum += numeroPosicao * valorDrecementado
+      if (factor < 2) {
+        factor = 9
+      }
     }
 
     const result = 11 - (sum % 11)

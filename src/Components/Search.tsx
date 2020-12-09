@@ -67,7 +67,7 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 
-interface searchProps {
+interface SearchProps {
     container?: Element;
     children?: any;
     version?: string;
@@ -78,7 +78,7 @@ interface searchProps {
 }
 
 
-export default function Search(props: searchProps) {
+export default function Search(props: SearchProps) {
     const classes = useStyles();
 
   return (

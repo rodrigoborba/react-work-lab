@@ -48,7 +48,7 @@ export function textMaskCNPJ(props: TextMaskCustomProps) {
                         if(ref){
                                 let valorAtual = ref.inputElement.value;
                                 valorAtual = removerMascaraDocumento(valorAtual);
-                                if(valorAtual.length == 12){
+                                if(valorAtual.length === 12){
                                         ref.inputElement.setSelectionRange(15,15);    
                                 }
                                 inputRef(ref.inputElement); 
@@ -81,6 +81,9 @@ export function removerMascaraDocumento(documento: string) {
 export function formatarDocumento(value: string) {
         value = value.toString();
         if(value.length > 11){
+                if(value.length === 13){
+                        value = "0" + "" + value;        
+                }
                 value=value.replace(/\D/g,"")
                 value=value.replace(/(\d{2})(\d)/,"$1.$2")
                 value=value.replace(/(\d{3})(\d)/,"$1.$2")
@@ -88,6 +91,9 @@ export function formatarDocumento(value: string) {
                 value=value.replace(/(\d{3})(\d{1,2})$/,"$1/$2")
         
         }else{
+                if(value.length === 10){
+                        value = "0" + "" + value;        
+                }
                 value=value.replace(/\D/g,"")
                 value=value.replace(/(\d{3})(\d)/,"$1.$2")
                 value=value.replace(/(\d{3})(\d)/,"$1.$2")
@@ -101,7 +107,7 @@ export function formatarDocumento(value: string) {
 
 
 export function formatarValorMoedaReal (valor: number): string {
-        if(undefined == valor){
+        if(undefined === valor || null === valor){
                 return "";       
         }
         if (valor < 0) {
@@ -112,7 +118,7 @@ export function formatarValorMoedaReal (valor: number): string {
 
 export function removerMascaraMonetaria(valor: any) {
     
-        if(undefined == valor){
+        if(undefined ===valor){
                 return undefined;       
         }
         
@@ -123,11 +129,12 @@ export function removerMascaraMonetaria(valor: any) {
 
 export function mascaraMonetaria(valor: string) {
     
-        if(undefined == valor){
+        if(undefined === valor || null === valor){
                 return undefined;       
         }
+        valor = valor.toString(); 
 
-        if(valor.slice(-1) == ',' || valor.slice(-1) == '.'){
+        if(valor.slice(-1) === ',' || valor.slice(-1) === '.'){
                 return valor;        
         }
         

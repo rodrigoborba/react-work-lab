@@ -8,7 +8,7 @@ export function validarParcelas(value: number): RetornoValidacao {
         valido: true,
         mensagem: ''
     };
-    if(value == undefined){
+    if(value === undefined){
       retornoValidacao.valido = false;
       return retornoValidacao;
     }
@@ -65,7 +65,7 @@ export function validarValorAmortizacaoPrevia(
 
 export function retornarSaldoDevedor(valorAmortizacao: any) {
   let saldoDevedor = 0;
-  if(valorAmortizacao == undefined || valorAmortizacao == 0){
+  if(valorAmortizacao === undefined || valorAmortizacao === 0){
     return 0;
   }
   saldoDevedor = valorAmortizacao * 100 / 30;  

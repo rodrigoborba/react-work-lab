@@ -1,6 +1,6 @@
 import Keycloak from 'keycloak-js';
 import { AxiosRequestConfig } from 'axios';
-import { getUserFromToken } from '../../utils/AuthUtils'
+import { getUserFromToken, getCNPJFromToken } from './utils/AuthUtils'
 
 export const keycloak = Keycloak(process.env.PUBLIC_URL + "/keycloak.json");
 
@@ -10,6 +10,10 @@ export function getToken(): string {
 
 export function getLoggedUser(): string {
   return getUserFromToken(window.localStorage.token);
+}
+
+export function getCNPJ(): string {
+  return getCNPJFromToken(window.localStorage.token);
 }
 
 export const isAuthenticated = () => keycloak.token !== null && keycloak.token !== undefined;

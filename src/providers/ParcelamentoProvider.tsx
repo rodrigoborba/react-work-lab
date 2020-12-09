@@ -1,5 +1,5 @@
-import BaseApi from '../services/BaseApi'
-import { getLoggedUser } from '../Components/seguranca/Auth'
+import BaseApi from '../Api'
+import { getLoggedUser } from '../Auth'
 import AmortizacaoPreviaTO from '../models/AmortizacaoPreviaTO' 
 
 export async function detalharOperacaoCliente(operacao: string): Promise<any> {

@@ -1,8 +1,8 @@
 import React, {useState, useEffect } from "react";
 
-import { Container, Snack, Buttons, Row, Page, Load } from 'bnb-ui/dist'
+import { Container, Snack, Buttons, Row, Col, Page, Load } from 'bnb-ui/dist'
 
-import { IconButton, Tooltip, Grid, TextField} from '@material-ui/core';
+import { IconButton, Tooltip, TextField} from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/SearchOutlined'
 import GetAppIcon from '@material-ui/icons/GetApp'
 import PublishIcon from '@material-ui/icons/Publish';
@@ -19,10 +19,11 @@ import { Link } from 'react-router-dom';
 
 import { consultarOperacoesCarteiraFiltro } from '../../providers/OperacoesProvider'
 import OperacaoTO from '../../models/OperacaoTO' 
-import { init } from '../../Components/seguranca/Auth'
+
+import { init } from '../../Auth'
+
 import { textMaskCPF, textMaskCNPJ, removerMascaraDocumento, formatarDocumento, textMaskOperacao } from '../../utils/Mascaras';
 import { validarCnpj, validarCpf } from '../../utils/ValidacaoUtils'
-
 
 import './style.css'
 
@@ -43,7 +44,20 @@ export interface StateListarOperacoes {
   openSnack?:  any;
 }
 
+const useSingleton = (callBack = () => { }) => { 
+  const [hasBeenCalled, setHasBeenCalled] = useState(false);
+  if (hasBeenCalled){
+    return;
+  } 
+  callBack();
+  setHasBeenCalled(true);
+}
+
 export default function ListarOperacoes(props: any) {
+
+  useSingleton(() => {
+    
+  });
 
   const [values, setValues] = React.useState<StateListarOperacoes>({
     operacaoCliente: '',
@@ -80,14 +94,15 @@ export default function ListarOperacoes(props: any) {
   };
 
   useEffect(() => {
-    init('login-required', 'implicit' )
+    init('login-required', 'implicit');
 
-  }, [])
+  },[]);
+
 
   function validarDocumento(){
     let documento = removerMascaraDocumento(doc);
     let documentoValido = true;
-    if(null != documento && documento != ""){
+    if(null != documento && documento !== ""){
       if(documento.length <= 11){
         documentoValido = validarCpf(documento);
       }else{
@@ -258,7 +273,7 @@ export default function ListarOperacoes(props: any) {
 
           <Row>
             
-            <Grid item xs={12} md={6} lg={6}>
+            <Col sm={6}>
               <TextField
                 id="documento"
                 label="CPF/CNPJ"
@@ -271,8 +286,8 @@ export default function ListarOperacoes(props: any) {
                   retornarMascara()
                   }
                 />
-            </Grid>
-            <Grid item xs={12} md={6} lg={6}>
+            </Col>
+            <Col sm={6}>
               <TextField
                 id="operacao"
                 label="Operação"
@@ -284,10 +299,10 @@ export default function ListarOperacoes(props: any) {
                   inputComponent: textMaskOperacao as any,
                 }}
                 />
-            </Grid>
+            </Col>
           </Row>           
           <Row>  
-            <Grid item xs={12} md={12}>
+            <Col sm={12}>
               <TextField
                 id="nome"
                 label="Nome"
@@ -296,11 +311,11 @@ export default function ListarOperacoes(props: any) {
                 variant="outlined"
                 fullWidth
                   />
-            </Grid>
+            </Col>
           </Row>
 
           <Row>
-            <Grid item xs={12} md={12}>
+            <Col sm={12}>
               <Buttons variant='outlined' color='secondary' onClick={()=> handleGet()}>
                 <SearchIcon />
                   Pesquisar
@@ -322,7 +337,7 @@ export default function ListarOperacoes(props: any) {
                           </Button>
                     </DialogActions>
                 </Dialog>
-            </Grid>
+            </Col>
           </Row>          
 
             
