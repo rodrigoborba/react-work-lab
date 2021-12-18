@@ -1,4 +1,4 @@
-Esse projeto é um app-teste para o desenvolvimento de uma aplicação nos padrões React do Banco do Nordeste.
+Esse projeto é um app-teste.
 
 ## Scripts
 
