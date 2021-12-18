@@ -15,7 +15,7 @@ ReactDOM.render(
 
         <Router history={history}>
             <MuiThemeProvider theme={App}>
-                <Header version="0.1" system="S549 - Empresa Web" out={<Out />}>
+                <Header version="0.1" system="Empresa Web" out={<Out />}>
                     <MenuList></MenuList>
                 </Header>
                 <Main></Main>
